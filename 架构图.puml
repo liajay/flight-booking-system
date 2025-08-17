@@ -1,0 +1,92 @@
+@startuml
+title 航班订票系统部署图
+
+cloud "Internet" {
+  component "Web Browser" as browser #pink
+}
+
+package "网络层" {
+  component "负载均衡器" as lb #lightblue
+}
+
+package "网关层" {
+    component "Gateway" as gw #lightgreen
+}
+
+package "服务治理层" {
+    database "Nacos" as nacos #orange
+}
+
+package "业务服务层" {
+    node "用户服务" as user_svc {
+    component "用户实例" as user #palegreen
+    }
+
+  node "订单服务" as order_svc {
+    component "订单实例1" as order #palegreen
+  }
+
+  node "库存服务" as inventory_svc {
+    component "库存实例1" as inv1 #palegreen
+    component "库存实例2" as inv2 #palegreen
+  }
+
+}
+
+package "事务协调层" {
+    component "Seata Server" as seata #violet
+  
+}
+
+package "数据层" {
+    database "MySQL主库" as mysql_master #skyblue
+  
+  
+    queue "Broker" as kafka #wheat
+  
+  
+    database "Redis节点" as redis #salmon
+  
+  
+  database "S3存储" as s3 #silver
+}
+
+' 外部访问链路
+browser --> lb : HTTP/HTTPS\n(80/443)
+lb --> gw
+
+' 网关到业务服务
+gw --> inv2
+
+' 业务服务到数据层
+user --> mysql_master : JDBC\n(MyBatis)
+user --> redis : 缓存
+order --> mysql_master
+order --> kafka : 订单事件
+inventory_svc --> mysql_master
+inventory_svc --> redis : 库存状态
+
+' 业务服务到事务协调
+user --> seata : 全局事务\n(XID)
+order --> seata
+inv1 --> seata
+
+' 数据层内部关系
+kafka --> s3 : 日志备份
+
+' 服务治理到业务服务
+nacos --> user : 配置管理
+nacos --> order
+nacos --> inv1
+
+' Seata到数据库
+seata --> mysql_master : 事务日志
+
+' ' 管理通道
+' component "管理终端" as admin #gray
+' admin --> nacos : 配置管理\n(8848)
+' admin --> seata : 事务监控\n(7091)
+' admin --> mysql_master : 数据库管理\n(3306)
+
+
+@enduml

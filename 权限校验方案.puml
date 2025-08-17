@@ -1,0 +1,20 @@
+@startuml
+actor 客户端 as client
+participant 网关 as gateway
+participant 库存服务 as inventory
+database Redis
+
+client -> gateway: 请求库存操作\n(携带JWT)
+gateway -> gateway: 验证JWT签名\n(使用公钥)
+gateway -> inventory: 转发请求\n(添加X-User-ID头)
+inventory -> Redis: 查询用户权限\n(KEY: user:{id}:perms)
+Redis --> inventory: 返回权限列表
+inventory -> inventory: 校验操作权限
+alt 有权限
+    inventory -> inventory: 执行库存操作
+    inventory --> gateway: 成功响应
+else 无权限
+    inventory --> gateway: 403 Forbidden
+end
+gateway --> client: 返回结果
+@enduml

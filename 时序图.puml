@@ -1,0 +1,33 @@
+@startuml
+actor User as user
+participant Gateway
+participant OrderService
+participant InventoryService
+participant Seata
+database MySQL
+
+user -> Gateway : POST /api/orders
+Gateway -> OrderService : 路由请求
+activate OrderService
+
+OrderService -> Seata : 开启全局事务(XID)
+Seata -> Seata : 记录事务状态
+
+OrderService -> Kafka : 发送订单创建事件\n(含XID)
+Kafka -> InventoryService : 消费事件
+activate InventoryService
+
+InventoryService -> Seata : 注册分支事务
+Seata -> Seata : 添加分支记录
+
+InventoryService -> Redis : 库存预扣减
+InventoryService -> MySQL : 更新库存
+InventoryService --> Seata : 报告成功
+
+Seata -> Seata : 检查所有分支状态
+Seata -> MySQL : 提交全局事务
+Seata --> OrderService : 确认提交
+OrderService -> MySQL : 创建订单记录
+OrderService --> Gateway : 响应成功
+Gateway --> user : 订单创建成功
+@enduml
