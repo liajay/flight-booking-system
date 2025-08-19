@@ -1,0 +1,20 @@
+@startuml
+
+package "网关层" {
+  [Spring Cloud Gateway] as gateway
+  [JWT验证过滤器] as jwtFilter
+  [防重放过滤器] as replayFilter
+  [路由配置] as routes
+}
+
+package "中间件" {
+  [Redis] as redis
+}
+
+gateway --> jwtFilter : 使用
+gateway --> replayFilter : 使用
+gateway --> routes : 使用
+jwtFilter --> redis : 查询权限
+replayFilter --> redis : 存储nonce
+
+@enduml

@@ -20,6 +20,9 @@
         <module>user-service/web</module>
         <module>user-service/service</module>
         <module>order-service/bootstrap</module>
+        <module>gateway/bootstrap</module>
+        <module>gateway/util</module>
+        <module>gateway/web</module>
     </modules>
 
     <properties>
