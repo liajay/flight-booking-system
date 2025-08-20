@@ -23,6 +23,12 @@
         <module>gateway/bootstrap</module>
         <module>gateway/util</module>
         <module>gateway/web</module>
+        <module>inventory-service/bootstrap</module>
+        <module>inventory-service/dal</module>
+        <module>inventory-service/model</module>
+        <module>inventory-service/service</module>
+        <module>inventory-service/util</module>
+        <module>inventory-service/web</module>
     </modules>
 
     <properties>
