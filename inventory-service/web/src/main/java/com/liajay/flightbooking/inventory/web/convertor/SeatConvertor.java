@@ -10,7 +10,6 @@ public class SeatConvertor {
 
     public static SeatQueryDTO convertToDTO(SeatQueryRequest request) {
         SeatQueryDTO dto = new SeatQueryDTO();
-        dto.setFlightId(request.getFlightId());
         dto.setFlightNumber(request.getFlightNumber());
         dto.setSeatClass(request.getSeatClass());
         dto.setIsAvailable(request.getIsAvailable());

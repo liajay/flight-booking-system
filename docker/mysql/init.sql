@@ -7,7 +7,7 @@ CREATE DATABASE IF NOT EXISTS nacos DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 USE flight_booking;
 
 -- 用户表
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '用户ID',
   `user_id` bigint NOT NULL COMMENT '用户ID',
   `username` varchar(50) NOT NULL COMMENT '用户名',
@@ -18,18 +18,18 @@ CREATE TABLE `users` (
   UNIQUE KEY `uk_user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
-CREATE TABLE flights (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID',
-    flight_number VARCHAR(20) NOT NULL UNIQUE COMMENT '航班号',
-    airline VARCHAR(100) NOT NULL COMMENT '航空公司',
-    departure_city VARCHAR(100) NOT NULL COMMENT '出发城市',
-    arrival_city VARCHAR(100) NOT NULL COMMENT '到达城市',
-    departure_time DATETIME NOT NULL COMMENT '出发时间',
-    arrival_time DATETIME NOT NULL COMMENT '到达时间',
-    base_price DECIMAL(10,2) NOT NULL COMMENT '基础价格',
-    status VARCHAR(20) NOT NULL DEFAULT 'SCHEDULED' COMMENT '航班状态',
-    created_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    updated_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+CREATE TABLE IF NOT EXISTS flights (
+    `id` BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID',
+    `flight_number` VARCHAR(20) NOT NULL UNIQUE COMMENT '航班号',
+    `airline` VARCHAR(100) NOT NULL COMMENT '航空公司',
+    `departure_city` VARCHAR(100) NOT NULL COMMENT '出发城市',
+    `arrival_city` VARCHAR(100) NOT NULL COMMENT '到达城市',
+    `departure_time` DATETIME NOT NULL COMMENT '出发时间',
+    `arrival_time` DATETIME NOT NULL COMMENT '到达时间',
+    `base_price` DECIMAL(10,2) NOT NULL COMMENT '基础价格',
+    `status` VARCHAR(20) NOT NULL DEFAULT 'SCHEDULED' COMMENT '航班状态',
+    `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `gmt_modified` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     INDEX idx_flight_number (flight_number),
     INDEX idx_departure_city (departure_city),
     INDEX idx_arrival_city (arrival_city),
@@ -40,22 +40,22 @@ CREATE TABLE flights (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='航班表';
 
 -- 创建座位表
-CREATE TABLE seats (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID',
-    flight_number VARCHAR(20) NOT NULL COMMENT '航班号',
-    seat_number VARCHAR(10) NOT NULL COMMENT '座位号',
-    seat_class VARCHAR(20) NOT NULL COMMENT '舱位等级',
-    is_available BOOLEAN NOT NULL DEFAULT TRUE COMMENT '是否可用',
-    price DECIMAL(10,2) NOT NULL COMMENT '座位价格',
-    created_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    updated_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    UNIQUE KEY uk_flight_seat (flight_id, seat_number),
-    INDEX idx_flight_id (flight_id),
+CREATE TABLE IF NOT EXISTS seats (
+    `id` BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID',
+    `flight_number` VARCHAR(20) NOT NULL COMMENT '航班号',
+    `seat_number` VARCHAR(10) NOT NULL COMMENT '座位号',
+    `seat_class` VARCHAR(20) NOT NULL COMMENT '舱位等级',
+    `is_available` BOOLEAN NOT NULL DEFAULT TRUE COMMENT '是否可用',
+    `price` DECIMAL(10,2) NOT NULL COMMENT '座位价格',
+    `created_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    UNIQUE KEY uk_flight_seat (flight_number, seat_number),
+    INDEX idx_flight_id (flight_number),
     INDEX idx_seat_class (seat_class),
     INDEX idx_is_available (is_available),
-    INDEX idx_flight_available (flight_id, is_available),
-    INDEX idx_flight_class (flight_id, seat_class),
-    FOREIGN KEY (flight_id) REFERENCES flights(id) ON DELETE CASCADE
+    INDEX idx_flight_available (flight_number, is_available),
+    INDEX idx_flight_class (flight_number, seat_class),
+    FOREIGN KEY (flight_number) REFERENCES flights(flight_number) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='座位表';
 
 INSERT INTO flights (flight_number, airline, departure_city, arrival_city, departure_time, arrival_time, base_price, status) VALUES
@@ -67,7 +67,7 @@ INSERT INTO flights (flight_number, airline, departure_city, arrival_city, depar
 
 -- 为每个航班插入座位数据
 -- CA1234航班座位（波音737，经济舱120座，商务舱20座）
-INSERT INTO seats (flight_id, seat_number, seat_class, is_available, price)
+INSERT INTO seats (flight_number, seat_number, seat_class, is_available, price)
 SELECT 'CA1234', seat_number, seat_class, TRUE, price FROM (
     -- 商务舱 (1-4排，每排4座：A,C,D,F)
     SELECT CONCAT(row_num, seat_letter) as seat_number, 'BUSINESS' as seat_class, 1200.00 as price
@@ -86,7 +86,7 @@ SELECT 'CA1234', seat_number, seat_class, TRUE, price FROM (
 ) seats_data;
 
 -- MU5678航班座位（空客A320，经济舱150座，商务舱30座）
-INSERT INTO seats (flight_id, seat_number, seat_class, is_available, price)
+INSERT INTO seats (flight_number, seat_number, seat_class, is_available, price)
 SELECT 'MU5678', seat_number, seat_class, TRUE, price FROM (
     -- 商务舱 (1-5排，每排4座：A,C,D,F) + (6排2座：A,F)
     SELECT CONCAT(row_num, seat_letter) as seat_number, 'BUSINESS' as seat_class, 1350.00 as price
@@ -111,7 +111,7 @@ SELECT 'MU5678', seat_number, seat_class, TRUE, price FROM (
 ) seats_data;
 
 -- CZ9012航班座位（小型客机，经济舱60座）
-INSERT INTO seats (flight_id, seat_number, seat_class, is_available, price)
+INSERT INTO seats (flight_number, seat_number, seat_class, is_available, price)
 SELECT 'CZ9012', seat_number, seat_class, TRUE, price FROM (
     -- 经济舱 (1-20排，每排3座：A,B,C)
     SELECT CONCAT(row_num, seat_letter) as seat_number, 'ECONOMY' as seat_class, 300.00 as price
@@ -122,6 +122,6 @@ SELECT 'CZ9012', seat_number, seat_class, TRUE, price FROM (
     CROSS JOIN (SELECT 'A' as seat_letter UNION SELECT 'B' UNION SELECT 'C') s
 ) seats_data;
 
-UPDATE seats SET is_available = FALSE WHERE flight_id = 1 AND seat_number IN ('1A', '1C', '7A', '7B', '12F');
-UPDATE seats SET is_available = FALSE WHERE flight_id = 2 AND seat_number IN ('2A', '2C', '8A', '8B', '15D', '15E');
-UPDATE seats SET is_available = FALSE WHERE flight_id = 3 AND seat_number IN ('5A', '5B', '10A', '15C');
+UPDATE seats SET is_available = FALSE WHERE flight_number = 'CA1234' AND seat_number IN ('1A', '1C', '7A', '7B', '12F');
+UPDATE seats SET is_available = FALSE WHERE flight_number = 'MU5678' AND seat_number IN ('2A', '2C', '8A', '8B', '15D', '15E');
+UPDATE seats SET is_available = FALSE WHERE flight_number = 'CZ9012' AND seat_number IN ('5A', '5B', '10A', '15C');

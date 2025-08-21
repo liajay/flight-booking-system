@@ -62,7 +62,7 @@ inventory-service/
 │   │   └── com/liajay/flightbooking/inventory/util/
 │   │       └── exception/             # 异常类
 │   └── pom.xml
-├── database-init.sql    # 数据库初始化脚本
+├── database-schema.sql    # 数据库初始化脚本
 ├── 领域模型.puml         # UML领域模型图
 └── pom.xml              # 主POM文件
 ```
@@ -183,7 +183,7 @@ GET /api/seats/flight/{flightId}/statistics
 ## 启动方式
 
 1. 确保MySQL数据库已启动
-2. 执行`database-init.sql`初始化数据库表和示例数据
+2. 执行`database-schema.sql`初始化数据库表和示例数据
 3. 配置数据库连接信息
 4. 运行`InventoryServiceApplication`启动服务
 5. 服务默认端口: 8080

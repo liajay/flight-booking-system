@@ -11,8 +11,20 @@
     <file url="file://$PROJECT_DIR$/gateway/util/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gateway/web/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gateway/web/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/inventory-service/bootstrap/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/inventory-service/bootstrap/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/inventory-service/dal/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/inventory-service/dal/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/inventory-service/model/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/inventory-service/model/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/inventory-service/service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/inventory-service/service/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/inventory-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/inventory-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/inventory-service/util/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/inventory-service/util/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/inventory-service/web/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/inventory-service/web/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/order-service/bootstrap/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/order-service/bootstrap/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/order-service/src/main/java" charset="UTF-8" />

@@ -17,7 +17,7 @@ public class Seat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "flight_id", nullable = false)
+    @Column(name = "flight_number", nullable = false)
     private String flightNumber;
 
     @Column(name = "seat_number", nullable = false, length = 10)
@@ -120,7 +120,7 @@ public class Seat {
     public String toString() {
         return "Seat{" +
                 "id=" + id +
-                ", flightId=" + flightNumber +
+                ", flightNumber=" + flightNumber +
                 ", seatNumber='" + seatNumber + '\'' +
                 ", seatClass=" + seatClass +
                 ", isAvailable=" + isAvailable +

@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication(scanBasePackages = "com.liajay.flightbooking")
 @EnableJpaRepositories(basePackages = "com.liajay.flightbooking.user.dal.repository")
 @EntityScan(basePackages = "com.liajay.flightbooking.user.dal.dataobject")
-@EnableAutoConfiguration
 public class UserServiceApplication {
     
     public static void main(String[] args) {

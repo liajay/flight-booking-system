@@ -40,7 +40,7 @@
     <retain-sticky-names value="false" />
   </component>
   <component name="DBNavigator.Project.FileConnectionMappingManager">
-    <mapping file-url="file://$PROJECT_DIR$/docker/mysql/init.sql" connection-id="9c611216-af43-4b76-a64f-05f976046adc" session-id="MAIN" current-schema="nacos" />
+    <mapping file-url="file://$PROJECT_DIR$/docker/mysql/init.sql" connection-id="9c611216-af43-4b76-a64f-05f976046adc" session-id="MAIN" current-schema="flight_booking" />
     <mapping file-url="file://$PROJECT_DIR$/docker/nacos-init.sql" connection-id="9c611216-af43-4b76-a64f-05f976046adc" session-id="MAIN" current-schema="mysql" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
@@ -559,7 +559,7 @@
       <regional-settings>
         <date-format value="MEDIUM" />
         <number-format value="UNGROUPED" />
-        <locale value="SYSTEM_DEFAULT" />
+        <locale value="zh" />
         <use-custom-formats value="false" />
       </regional-settings>
       <environment>

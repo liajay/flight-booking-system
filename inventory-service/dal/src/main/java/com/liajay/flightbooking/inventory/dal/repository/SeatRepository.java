@@ -46,13 +46,13 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
     /**
      * 统计航班可用座位数量
      */
-    @Query("SELECT COUNT(s) FROM Seat s WHERE s.flight_number = :flightId AND s.isAvailable = true")
+    @Query("SELECT COUNT(s) FROM Seat s WHERE s.flightNumber = :flightNumber AND s.isAvailable = true")
     Long countAvailableSeatsByFlightNumber(@Param("flightNumber") String flightNumber);
 
     /**
      * 统计航班某舱位等级的可用座位数量
      */
-    @Query("SELECT COUNT(s) FROM Seat s WHERE s.flightId = :flightId AND s.seatClass = :seatClass AND s.isAvailable = true")
+    @Query("SELECT COUNT(s) FROM Seat s WHERE s.flightNumber = :flightNumber AND s.seatClass = :seatClass AND s.isAvailable = true")
     Long countAvailableSeatsByFlightNumberAndSeatClass(@Param("flightNumber") String flightNumber, @Param("seatClass") SeatClass seatClass);
 
     /**
