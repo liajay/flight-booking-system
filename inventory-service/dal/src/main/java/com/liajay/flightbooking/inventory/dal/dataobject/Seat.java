@@ -18,7 +18,7 @@ public class Seat {
     private Long id;
 
     @Column(name = "flight_id", nullable = false)
-    private Long flightId;
+    private String flightNumber;
 
     @Column(name = "seat_number", nullable = false, length = 10)
     private String seatNumber;
@@ -33,42 +33,23 @@ public class Seat {
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Column(name = "created_time", nullable = false)
-    private LocalDateTime createdTime;
-
-    @Column(name = "updated_time", nullable = false)
-    private LocalDateTime updatedTime;
-
     // 无参构造函数
     public Seat() {}
 
     // 构造函数
-    public Seat(Long flightId, String seatNumber, SeatClass seatClass, BigDecimal price) {
-        this.flightId = flightId;
+    public Seat(String flightId, String seatNumber, SeatClass seatClass, BigDecimal price) {
+        this.flightNumber = flightId;
         this.seatNumber = seatNumber;
         this.seatClass = seatClass;
         this.price = price;
         this.isAvailable = true;
-        this.createdTime = LocalDateTime.now();
-        this.updatedTime = LocalDateTime.now();
     }
 
     @PrePersist
     protected void onCreate() {
-        if (createdTime == null) {
-            createdTime = LocalDateTime.now();
-        }
-        if (updatedTime == null) {
-            updatedTime = LocalDateTime.now();
-        }
         if (isAvailable == null) {
             isAvailable = true;
         }
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedTime = LocalDateTime.now();
     }
 
     // Getter and Setter methods
@@ -80,12 +61,12 @@ public class Seat {
         this.id = id;
     }
 
-    public Long getFlightId() {
-        return flightId;
+    public String getFlightNumber() {
+        return flightNumber;
     }
 
-    public void setFlightId(Long flightId) {
-        this.flightId = flightId;
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
     }
 
     public String getSeatNumber() {
@@ -120,42 +101,26 @@ public class Seat {
         this.price = price;
     }
 
-    public LocalDateTime getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public LocalDateTime getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(LocalDateTime updatedTime) {
-        this.updatedTime = updatedTime;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Seat seat = (Seat) o;
         return Objects.equals(id, seat.id) &&
-               Objects.equals(flightId, seat.flightId) &&
+               Objects.equals(flightNumber, seat.flightNumber) &&
                Objects.equals(seatNumber, seat.seatNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, flightId, seatNumber);
+        return Objects.hash(id, flightNumber, seatNumber);
     }
 
     @Override
     public String toString() {
         return "Seat{" +
                 "id=" + id +
-                ", flightId=" + flightId +
+                ", flightId=" + flightNumber +
                 ", seatNumber='" + seatNumber + '\'' +
                 ", seatClass=" + seatClass +
                 ", isAvailable=" + isAvailable +

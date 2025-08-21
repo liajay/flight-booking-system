@@ -24,9 +24,7 @@ public class FlightVO {
     private BigDecimal basePrice;
     private String status;
     private String statusDescription;
-    
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdTime;
+
 
     // 航班统计信息
     private Long totalSeats;
@@ -39,7 +37,7 @@ public class FlightVO {
 
     public FlightVO(Long id, String flightNumber, String airline, String departureCity, String arrivalCity,
                     LocalDateTime departureTime, LocalDateTime arrivalTime, BigDecimal basePrice, 
-                    String status, String statusDescription, LocalDateTime createdTime) {
+                    String status, String statusDescription) {
         this.id = id;
         this.flightNumber = flightNumber;
         this.airline = airline;
@@ -50,7 +48,6 @@ public class FlightVO {
         this.basePrice = basePrice;
         this.status = status;
         this.statusDescription = statusDescription;
-        this.createdTime = createdTime;
     }
 
     // Getter and Setter methods
@@ -132,14 +129,6 @@ public class FlightVO {
 
     public void setStatusDescription(String statusDescription) {
         this.statusDescription = statusDescription;
-    }
-
-    public LocalDateTime getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
     }
 
     public Long getTotalSeats() {

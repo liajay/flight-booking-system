@@ -42,16 +42,8 @@ public class Flight {
     @Column(name = "status", nullable = false, length = 20)
     private FlightStatus status;
 
-    @Column(name = "created_time", nullable = false)
-    private LocalDateTime createdTime;
-
-    @Column(name = "updated_time", nullable = false)
-    private LocalDateTime updatedTime;
-
-    // 无参构造函数
     public Flight() {}
 
-    // 构造函数
     public Flight(String flightNumber, String airline, String departureCity, String arrivalCity,
                   LocalDateTime departureTime, LocalDateTime arrivalTime, BigDecimal basePrice) {
         this.flightNumber = flightNumber;
@@ -62,27 +54,8 @@ public class Flight {
         this.arrivalTime = arrivalTime;
         this.basePrice = basePrice;
         this.status = FlightStatus.SCHEDULED;
-        this.createdTime = LocalDateTime.now();
-        this.updatedTime = LocalDateTime.now();
     }
 
-    @PrePersist
-    protected void onCreate() {
-        if (createdTime == null) {
-            createdTime = LocalDateTime.now();
-        }
-        if (updatedTime == null) {
-            updatedTime = LocalDateTime.now();
-        }
-        if (status == null) {
-            status = FlightStatus.SCHEDULED;
-        }
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedTime = LocalDateTime.now();
-    }
 
     // Getter and Setter methods
     public Long getId() {
@@ -155,22 +128,6 @@ public class Flight {
 
     public void setStatus(FlightStatus status) {
         this.status = status;
-    }
-
-    public LocalDateTime getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public LocalDateTime getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(LocalDateTime updatedTime) {
-        this.updatedTime = updatedTime;
     }
 
     @Override

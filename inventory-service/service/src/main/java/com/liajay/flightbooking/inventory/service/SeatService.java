@@ -11,22 +11,12 @@ import java.util.List;
  * Service层 - 业务逻辑接口
  */
 public interface SeatService {
-
-    /**
-     * 根据航班ID查询所有座位
-     */
-    SeatQueryResultDTO findSeatsByFlightId(Long flightId, SeatQueryDTO queryDTO);
-
+    
     /**
      * 根据航班号查询所有座位
      */
     SeatQueryResultDTO findSeatsByFlightNumber(String flightNumber, SeatQueryDTO queryDTO);
-
-    /**
-     * 根据航班ID查询可用座位
-     */
-    SeatQueryResultDTO findAvailableSeatsByFlightId(Long flightId, SeatQueryDTO queryDTO);
-
+    
     /**
      * 根据航班号查询可用座位
      */
@@ -35,15 +25,15 @@ public interface SeatService {
     /**
      * 根据航班ID和舱位等级查询座位
      */
-    SeatQueryResultDTO findSeatsByFlightIdAndClass(Long flightId, String seatClass, SeatQueryDTO queryDTO);
+    SeatQueryResultDTO findSeatsByFlightNumberAndClass(String FlightNumber, String seatClass, SeatQueryDTO queryDTO);
 
     /**
      * 根据航班ID和座位号查询特定座位
      */
-    Seat findSeatByFlightIdAndSeatNumber(Long flightId, String seatNumber);
+    Seat findSeatByFlightNumberAndSeatNumber(String FlightNumber, String seatNumber);
 
     /**
      * 统计航班座位信息
      */
-    SeatQueryResultDTO getFlightSeatStatistics(Long flightId);
+    SeatQueryResultDTO getFlightSeatStatistics(String flightNumber);
 }

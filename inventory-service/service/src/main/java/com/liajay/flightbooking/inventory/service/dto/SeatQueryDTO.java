@@ -4,7 +4,6 @@ package com.liajay.flightbooking.inventory.service.dto;
  * 座位查询DTO
  */
 public class SeatQueryDTO {
-    private Long flightId;
     private String flightNumber;
     private String seatClass;
     private Boolean isAvailable;
@@ -17,14 +16,6 @@ public class SeatQueryDTO {
 
     public SeatQueryDTO() {}
 
-    // Getter and Setter methods
-    public Long getFlightId() {
-        return flightId;
-    }
-
-    public void setFlightId(Long flightId) {
-        this.flightId = flightId;
-    }
 
     public String getFlightNumber() {
         return flightNumber;

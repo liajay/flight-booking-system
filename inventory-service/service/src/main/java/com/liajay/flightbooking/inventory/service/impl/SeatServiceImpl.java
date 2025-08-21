@@ -33,41 +33,16 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public SeatQueryResultDTO findSeatsByFlightId(Long flightId, SeatQueryDTO queryDTO) {
-        if (queryDTO.getPage() != null && queryDTO.getSize() != null) {
-            // 分页查询
-            Pageable pageable = createPageable(queryDTO);
-            Page<Seat> seatPage = seatRepository.findByFlightId(flightId, pageable);
-            Page<SeatVO> seatVOPage = seatPage.map(seat -> convertToVO(seat));
-            return new SeatQueryResultDTO(seatVOPage);
-        } else {
-            // 非分页查询
-            List<Seat> seats = seatRepository.findByFlightId(flightId);
-            List<SeatVO> seatVOs = seats.stream().map(this::convertToVO).collect(Collectors.toList());
-            return new SeatQueryResultDTO(seatVOs);
-        }
-    }
-
-    @Override
     public SeatQueryResultDTO findSeatsByFlightNumber(String flightNumber, SeatQueryDTO queryDTO) {
-        Flight flight = flightRepository.findByFlightNumber(flightNumber).orElse(null);
-        if (flight == null) {
-            return new SeatQueryResultDTO(List.of());
-        }
-        return findSeatsByFlightId(flight.getId(), queryDTO);
-    }
-
-    @Override
-    public SeatQueryResultDTO findAvailableSeatsByFlightId(Long flightId, SeatQueryDTO queryDTO) {
         if (queryDTO.getPage() != null && queryDTO.getSize() != null) {
             // 分页查询
             Pageable pageable = createPageable(queryDTO);
-            Page<Seat> seatPage = seatRepository.findByFlightIdAndIsAvailable(flightId, true, pageable);
-            Page<SeatVO> seatVOPage = seatPage.map(seat -> convertToVO(seat));
+            Page<Seat> seatPage = seatRepository.findByFlightNumber(flightNumber, pageable);
+            Page<SeatVO> seatVOPage = seatPage.map(this::convertToVO);
             return new SeatQueryResultDTO(seatVOPage);
         } else {
             // 非分页查询
-            List<Seat> seats = seatRepository.findByFlightIdAndIsAvailable(flightId, true);
+            List<Seat> seats = seatRepository.findByFlightNumber(flightNumber);
             List<SeatVO> seatVOs = seats.stream().map(this::convertToVO).collect(Collectors.toList());
             return new SeatQueryResultDTO(seatVOs);
         }
@@ -75,15 +50,23 @@ public class SeatServiceImpl implements SeatService {
 
     @Override
     public SeatQueryResultDTO findAvailableSeatsByFlightNumber(String flightNumber, SeatQueryDTO queryDTO) {
-        Flight flight = flightRepository.findByFlightNumber(flightNumber).orElse(null);
-        if (flight == null) {
-            return new SeatQueryResultDTO(List.of());
+        if (queryDTO.getPage() != null && queryDTO.getSize() != null) {
+            // 分页查询
+            Pageable pageable = createPageable(queryDTO);
+            Page<Seat> seatPage = seatRepository.findByFlightNumberAndIsAvailable(flightNumber, true, pageable);
+            Page<SeatVO> seatVOPage = seatPage.map(this::convertToVO);
+            return new SeatQueryResultDTO(seatVOPage);
+        } else {
+            // 非分页查询
+            List<Seat> seats = seatRepository.findByFlightNumberAndIsAvailable(flightNumber, true);
+            List<SeatVO> seatVOs = seats.stream().map(this::convertToVO).collect(Collectors.toList());
+            return new SeatQueryResultDTO(seatVOs);
         }
-        return findAvailableSeatsByFlightId(flight.getId(), queryDTO);
     }
 
+
     @Override
-    public SeatQueryResultDTO findSeatsByFlightIdAndClass(Long flightId, String seatClass, SeatQueryDTO queryDTO) {
+    public SeatQueryResultDTO findSeatsByFlightNumberAndClass(String FlightNumber, String seatClass, SeatQueryDTO queryDTO) {
         SeatClass seatClassEnum = parseSeatClass(seatClass);
         if (seatClassEnum == null) {
             return new SeatQueryResultDTO(List.of());
@@ -92,17 +75,17 @@ public class SeatServiceImpl implements SeatService {
         if (queryDTO.getPage() != null && queryDTO.getSize() != null) {
             // 分页查询
             Pageable pageable = createPageable(queryDTO);
-            Page<Seat> seatPage = seatRepository.findByFlightIdAndSeatClass(flightId, seatClassEnum, pageable);
-            Page<SeatVO> seatVOPage = seatPage.map(seat -> convertToVO(seat));
+            Page<Seat> seatPage = seatRepository.findByFlightNumberAndSeatClass(FlightNumber, seatClassEnum, pageable);
+            Page<SeatVO> seatVOPage = seatPage.map(this::convertToVO);
             return new SeatQueryResultDTO(seatVOPage);
         } else {
             // 非分页查询
             Boolean isAvailable = queryDTO.getIsAvailable();
             List<Seat> seats;
             if (isAvailable != null) {
-                seats = seatRepository.findByFlightIdAndSeatClassAndIsAvailable(flightId, seatClassEnum, isAvailable);
+                seats = seatRepository.findByFlightNumberAndSeatClassAndIsAvailable(FlightNumber, seatClassEnum, isAvailable);
             } else {
-                seats = seatRepository.findByFlightIdAndSeatClass(flightId, seatClassEnum, Pageable.unpaged()).getContent();
+                seats = seatRepository.findByFlightNumberAndSeatClass(FlightNumber, seatClassEnum, Pageable.unpaged()).getContent();
             }
             List<SeatVO> seatVOs = seats.stream().map(this::convertToVO).collect(Collectors.toList());
             return new SeatQueryResultDTO(seatVOs);
@@ -110,13 +93,13 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public Seat findSeatByFlightIdAndSeatNumber(Long flightId, String seatNumber) {
-        return seatRepository.findByFlightIdAndSeatNumber(flightId, seatNumber).orElse(null);
+    public Seat findSeatByFlightNumberAndSeatNumber(String FlightNumber, String seatNumber) {
+        return seatRepository.findByFlightNumberAndSeatNumber(FlightNumber, seatNumber).orElse(null);
     }
 
     @Override
-    public SeatQueryResultDTO getFlightSeatStatistics(Long flightId) {
-        List<Seat> allSeats = seatRepository.findByFlightId(flightId);
+    public SeatQueryResultDTO getFlightSeatStatistics(String FlightNumber) {
+        List<Seat> allSeats = seatRepository.findByFlightNumber(FlightNumber);
         
         SeatQueryResultDTO result = new SeatQueryResultDTO();
         result.setTotalSeats((long) allSeats.size());
@@ -165,17 +148,16 @@ public class SeatServiceImpl implements SeatService {
     private SeatVO convertToVO(Seat seat) {
         SeatVO vo = new SeatVO(
             seat.getId(),
-            seat.getFlightId(),
+            seat.getFlightNumber(),
             seat.getSeatNumber(),
             seat.getSeatClass().name(),
             seat.getSeatClass().getDescription(),
             seat.getIsAvailable(),
-            seat.getPrice(),
-            seat.getCreatedTime()
+            seat.getPrice()
         );
 
         // 添加航班信息
-        Flight flight = flightRepository.findById(seat.getFlightId()).orElse(null);
+        Flight flight = flightRepository.findByFlightNumber(seat.getFlightNumber()).orElse(null);
         if (flight != null) {
             vo.setFlightNumber(flight.getFlightNumber());
             vo.setAirline(flight.getAirline());

@@ -1,24 +1,18 @@
 package com.liajay.flightbooking.inventory.model.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 座位视图对象
  */
 public class SeatVO {
     private Long id;
-    private Long flightId;
+    private String flightId;
     private String seatNumber;
     private String seatClass;
     private String seatClassDescription;
     private Boolean isAvailable;
     private BigDecimal price;
-    
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdTime;
 
     // 关联的航班信息
     private String flightNumber;
@@ -26,8 +20,8 @@ public class SeatVO {
 
     public SeatVO() {}
 
-    public SeatVO(Long id, Long flightId, String seatNumber, String seatClass, String seatClassDescription,
-                  Boolean isAvailable, BigDecimal price, LocalDateTime createdTime) {
+    public SeatVO(Long id, String flightId, String seatNumber, String seatClass, String seatClassDescription,
+                  Boolean isAvailable, BigDecimal price) {
         this.id = id;
         this.flightId = flightId;
         this.seatNumber = seatNumber;
@@ -35,7 +29,6 @@ public class SeatVO {
         this.seatClassDescription = seatClassDescription;
         this.isAvailable = isAvailable;
         this.price = price;
-        this.createdTime = createdTime;
     }
 
     // Getter and Setter methods
@@ -47,11 +40,11 @@ public class SeatVO {
         this.id = id;
     }
 
-    public Long getFlightId() {
+    public String getFlightId() {
         return flightId;
     }
 
-    public void setFlightId(Long flightId) {
+    public void setFlightId(String flightId) {
         this.flightId = flightId;
     }
 
@@ -93,14 +86,6 @@ public class SeatVO {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-
-    public LocalDateTime getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
     }
 
     public String getFlightNumber() {

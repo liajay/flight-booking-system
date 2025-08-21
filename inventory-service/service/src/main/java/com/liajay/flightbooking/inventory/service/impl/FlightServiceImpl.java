@@ -187,12 +187,11 @@ public class FlightServiceImpl implements FlightService {
             flight.getArrivalTime(),
             flight.getBasePrice(),
             flight.getStatus().name(),
-            flight.getStatus().getDescription(),
-            flight.getCreatedTime()
+            flight.getStatus().getDescription()
         );
 
         // 添加座位统计信息
-        Long availableSeats = seatRepository.countAvailableSeatsByFlightId(flight.getId());
+        Long availableSeats = seatRepository.countAvailableSeatsByFlightNumber(flight.getFlightNumber());
         vo.setAvailableSeats(availableSeats);
 
         return vo;

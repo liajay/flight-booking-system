@@ -21,47 +21,47 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
     /**
      * 根据航班ID查询所有座位
      */
-    List<Seat> findByFlightId(Long flightId);
+    List<Seat> findByFlightNumber(String flightNumber);
 
     /**
      * 根据航班ID查询可用座位
      */
-    List<Seat> findByFlightIdAndIsAvailable(Long flightId, Boolean isAvailable);
+    List<Seat> findByFlightNumberAndIsAvailable(String flightNumber, Boolean isAvailable);
 
     /**
      * 根据航班ID和座位号查询座位
      */
-    Optional<Seat> findByFlightIdAndSeatNumber(Long flightId, String seatNumber);
+    Optional<Seat> findByFlightNumberAndSeatNumber(String flightNumber, String seatNumber);
 
     /**
      * 根据航班ID和舱位等级查询座位（分页）
      */
-    Page<Seat> findByFlightIdAndSeatClass(Long flightId, SeatClass seatClass, Pageable pageable);
+    Page<Seat> findByFlightNumberAndSeatClass(String flightNumber, SeatClass seatClass, Pageable pageable);
 
     /**
      * 根据航班ID和舱位等级查询可用座位
      */
-    List<Seat> findByFlightIdAndSeatClassAndIsAvailable(Long flightId, SeatClass seatClass, Boolean isAvailable);
+    List<Seat> findByFlightNumberAndSeatClassAndIsAvailable(String flightNumber, SeatClass seatClass, Boolean isAvailable);
 
     /**
      * 统计航班可用座位数量
      */
-    @Query("SELECT COUNT(s) FROM Seat s WHERE s.flightId = :flightId AND s.isAvailable = true")
-    Long countAvailableSeatsByFlightId(@Param("flightId") Long flightId);
+    @Query("SELECT COUNT(s) FROM Seat s WHERE s.flight_number = :flightId AND s.isAvailable = true")
+    Long countAvailableSeatsByFlightNumber(@Param("flightNumber") String flightNumber);
 
     /**
      * 统计航班某舱位等级的可用座位数量
      */
     @Query("SELECT COUNT(s) FROM Seat s WHERE s.flightId = :flightId AND s.seatClass = :seatClass AND s.isAvailable = true")
-    Long countAvailableSeatsByFlightIdAndSeatClass(@Param("flightId") Long flightId, @Param("seatClass") SeatClass seatClass);
+    Long countAvailableSeatsByFlightNumberAndSeatClass(@Param("flightNumber") String flightNumber, @Param("seatClass") SeatClass seatClass);
 
     /**
      * 根据航班ID分页查询座位
      */
-    Page<Seat> findByFlightId(Long flightId, Pageable pageable);
+    Page<Seat> findByFlightNumber(String flightNumber, Pageable pageable);
 
     /**
      * 根据航班ID和可用性分页查询座位
      */
-    Page<Seat> findByFlightIdAndIsAvailable(Long flightId, Boolean isAvailable, Pageable pageable);
+    Page<Seat> findByFlightNumberAndIsAvailable(String flightNumber, Boolean isAvailable, Pageable pageable);
 }
