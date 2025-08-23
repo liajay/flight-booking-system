@@ -36,13 +36,12 @@ public class SeatController {
         try {
             SeatQueryDTO queryDTO = SeatConvertor.convertToDTO(request);
             queryDTO.setFlightNumber(flightNumber);
-            SeatQueryResultDTO result = seatService.findSeatsByFlightNumber(flightNumber, queryDTO);
+            SeatQueryResultDTO result = seatService.querySeats(queryDTO);
             return HttpResponse.success(result);
         } catch (Exception e) {
             return HttpResponse.error("根据航班号查询座位失败: " + e.getMessage());
         }
     }
-
 
     /**
      * 根据航班号查询可用座位
@@ -55,7 +54,7 @@ public class SeatController {
             SeatQueryDTO queryDTO = SeatConvertor.convertToDTO(request);
             queryDTO.setFlightNumber(flightNumber);
             queryDTO.setIsAvailable(true);
-            SeatQueryResultDTO result = seatService.findAvailableSeatsByFlightNumber(flightNumber, queryDTO);
+            SeatQueryResultDTO result = seatService.querySeats(queryDTO);
             return HttpResponse.success(result);
         } catch (Exception e) {
             return HttpResponse.error("根据航班号查询可用座位失败: " + e.getMessage());
@@ -74,7 +73,7 @@ public class SeatController {
             SeatQueryDTO queryDTO = SeatConvertor.convertToDTO(request);
             queryDTO.setFlightNumber(flightNumber);
             queryDTO.setSeatClass(seatClass);
-            SeatQueryResultDTO result = seatService.findSeatsByFlightNumberAndClass(flightNumber, seatClass, queryDTO);
+            SeatQueryResultDTO result = seatService.querySeats(queryDTO);
             return HttpResponse.success(result);
         } catch (Exception e) {
             return HttpResponse.error("根据航班ID和舱位等级查询座位失败: " + e.getMessage());
@@ -103,9 +102,12 @@ public class SeatController {
      * 获取航班座位统计信息
      */
     @GetMapping("/flight/{FlightNumber}/statistics")
-    public HttpResponse<SeatQueryResultDTO> getFlightSeatStatistics(@PathVariable String FlightNumber) {
+    public HttpResponse<SeatQueryResultDTO> getFlightSeatStatistics(@PathVariable String flightNumber) {
         try {
-            SeatQueryResultDTO result = seatService.getFlightSeatStatistics(FlightNumber);
+            SeatQueryDTO queryDTO = new SeatQueryDTO();
+            queryDTO.setFlightNumber(flightNumber);
+            queryDTO.setEnablePaging(false); // 统计不需要分页
+            SeatQueryResultDTO result = seatService.querySeats(queryDTO);
             return HttpResponse.success(result);
         } catch (Exception e) {
             return HttpResponse.error("获取航班座位统计信息失败: " + e.getMessage());
@@ -118,18 +120,12 @@ public class SeatController {
     @GetMapping
     public HttpResponse<SeatQueryResultDTO> querySeats(@Valid SeatQueryRequest request) {
         try {
-            if (request.getFlightNumber() == null) {
+            if (request.getFlightNumber() == null || request.getFlightNumber().trim().isEmpty()) {
                 return HttpResponse.error("必须提供航班号");
             }
             
             SeatQueryDTO queryDTO = SeatConvertor.convertToDTO(request);
-            SeatQueryResultDTO result;
-            
-            if (request.getFlightNumber() != null) {
-                result = seatService.findSeatsByFlightNumber(request.getFlightNumber(), queryDTO);
-            } else {
-                result = seatService.findSeatsByFlightNumber(request.getFlightNumber(), queryDTO);
-            }
+            SeatQueryResultDTO result = seatService.querySeats(queryDTO);
             
             return HttpResponse.success(result);
         } catch (Exception e) {

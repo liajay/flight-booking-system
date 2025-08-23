@@ -146,6 +146,8 @@ export default {
           password: this.loginForm.password
         })
         
+        console.log('登录响应:', response.data) // 添加调试日志
+        
         if (response.data.success) {
           this.successMessage = '登录成功！'
           // 保存JWT token（后端只返回token）
@@ -158,11 +160,34 @@ export default {
             this.$router.push('/dashboard')
           }, 1000)
         } else {
+          // 登录失败，显示错误消息
           this.errorMessage = response.data.message || '登录失败'
+          console.log('设置错误消息:', this.errorMessage) // 添加调试日志
+          
+          // 确保错误消息持续显示5秒
+          setTimeout(() => {
+            this.errorMessage = ''
+          }, 5000)
         }
       } catch (error) {
         console.error('登录错误:', error)
-        this.errorMessage = error.response?.data?.message || '网络错误，请稍后重试'
+        
+        // 更详细的错误处理
+        if (error.response) {
+          // 服务器返回了错误状态码
+          this.errorMessage = error.response.data?.message || `服务器错误: ${error.response.status}`
+        } else if (error.request) {
+          // 请求发出了但没有收到响应
+          this.errorMessage = '网络连接失败，请检查网络'
+        } else {
+          // 其他错误
+          this.errorMessage = '请求配置错误'
+        }
+        
+        // 确保错误消息持续显示5秒
+        setTimeout(() => {
+          this.errorMessage = ''
+        }, 5000)
       } finally {
         this.loading = false
       }

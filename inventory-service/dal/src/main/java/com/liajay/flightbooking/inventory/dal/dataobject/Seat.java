@@ -1,36 +1,19 @@
 package com.liajay.flightbooking.inventory.dal.dataobject;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
  * 座位实体类
  * DAL层 - 数据访问对象
  */
-@Entity
-@Table(name = "seats")
 public class Seat {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "flight_number", nullable = false)
     private String flightNumber;
-
-    @Column(name = "seat_number", nullable = false, length = 10)
     private String seatNumber;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "seat_class", nullable = false, length = 20)
     private SeatClass seatClass;
-
-    @Column(name = "is_available", nullable = false)
     private Boolean isAvailable;
-
-    @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
     // 无参构造函数
@@ -43,13 +26,6 @@ public class Seat {
         this.seatClass = seatClass;
         this.price = price;
         this.isAvailable = true;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        if (isAvailable == null) {
-            isAvailable = true;
-        }
     }
 
     // Getter and Setter methods

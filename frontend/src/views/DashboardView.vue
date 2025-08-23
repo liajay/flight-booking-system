@@ -11,16 +11,16 @@
     </header>
     
     <main class="main-content">
-      <div class="welcome-section">
+      <div class="welcome-section" v-if="activeTab === 'dashboard'">
         <h2>欢迎使用航班订票系统</h2>
         <p>您已成功登录系统</p>
       </div>
       
-      <div class="feature-cards">
+      <div class="feature-cards" v-if="activeTab === 'dashboard'">
         <div class="card">
           <h3>🛫 航班查询</h3>
           <p>查看可用航班信息</p>
-          <button class="card-btn">即将上线</button>
+          <button class="card-btn" @click="showFlightList">查看航班</button>
         </div>
         
         <div class="card">
@@ -34,6 +34,15 @@
           <p>管理个人信息</p>
           <button class="card-btn" @click="showUserInfo">查看信息</button>
         </div>
+      </div>
+      
+      <!-- 航班列表区域 -->
+      <div v-if="activeTab === 'flights'" class="flight-section">
+        <div class="section-header">
+          <h3>航班信息</h3>
+          <button @click="activeTab = 'dashboard'" class="back-btn">返回首页</button>
+        </div>
+        <FlightList />
       </div>
       
       <!-- 用户信息模态框 -->
@@ -54,13 +63,18 @@
 
 <script>
 import { storage } from '../utils/index.js'
+import FlightList from './FlightListView.vue'
 
 export default {
   name: 'DashboardView',
+  components: {
+    FlightList
+  },
   data() {
     return {
       userInfo: {},
-      showModal: false
+      showModal: false,
+      activeTab: 'dashboard' // 'dashboard' 或 'flights'
     }
   },
   computed: {
@@ -79,6 +93,11 @@ export default {
         storage.clear()
         this.$router.push('/login')
       }
+    },
+    
+    // 显示航班列表
+    showFlightList() {
+      this.activeTab = 'flights'
     },
     
     // 显示用户信息
@@ -289,6 +308,46 @@ export default {
 
 .close-btn:hover {
   opacity: 0.9;
+}
+
+.close-btn:hover {
+  opacity: 0.9;
+}
+
+/* 航班列表区域样式 */
+.flight-section {
+  margin-top: 30px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.section-header h3 {
+  color: #333;
+  font-size: 24px;
+  margin: 0;
+}
+
+.back-btn {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: transform 0.2s ease;
+}
+
+.back-btn:hover {
+  transform: translateY(-1px);
 }
 
 /* 响应式设计 */

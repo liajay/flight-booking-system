@@ -1,6 +1,6 @@
 spring:
   application:
-    name: user-service
+    name: inventory-service
   profiles:
     active: local
   datasource:
@@ -16,24 +16,31 @@ spring:
       maximum-pool-size: 12
       minimum-idle: 10
       pool-name: DatebookHikariCP
-  jpa:
-    hibernate:
-      ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        format_sql: true
-    open-in-view: false
+
+# MyBatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.liajay.flightbooking.inventory.dal.dataobject
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# PageHelper配置
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+
 
 server:
-  port: 8081
+  port: 8082
 
 logging:
   level:
     com.liajay.flightbooking: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.liajay.flightbooking.inventory.dal.mapper: DEBUG
 

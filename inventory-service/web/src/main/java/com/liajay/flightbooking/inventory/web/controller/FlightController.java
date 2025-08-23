@@ -65,7 +65,10 @@ public class FlightController {
             @Valid FlightQueryRequest request) {
         try {
             FlightQueryDTO queryDTO = FlightConvertor.convertToDTO(request);
-            FlightQueryResultDTO result = flightService.queryFlightsByRoute(departureCity, arrivalCity, queryDTO);
+            // 设置路线查询条件
+            queryDTO.setDepartureCity(departureCity);
+            queryDTO.setArrivalCity(arrivalCity);
+            FlightQueryResultDTO result = flightService.queryFlights(queryDTO);
             return HttpResponse.success(result);
         } catch (Exception e) {
             return HttpResponse.error("根据路线查询航班失败: " + e.getMessage());
@@ -81,7 +84,9 @@ public class FlightController {
             @Valid FlightQueryRequest request) {
         try {
             FlightQueryDTO queryDTO = FlightConvertor.convertToDTO(request);
-            FlightQueryResultDTO result = flightService.queryFlightsByAirline(airline, queryDTO);
+            // 设置航空公司查询条件
+            queryDTO.setAirline(airline);
+            FlightQueryResultDTO result = flightService.queryFlights(queryDTO);
             return HttpResponse.success(result);
         } catch (Exception e) {
             return HttpResponse.error("根据航空公司查询航班失败: " + e.getMessage());
@@ -98,7 +103,8 @@ public class FlightController {
                 return HttpResponse.error("开始时间和结束时间不能为空");
             }
             FlightQueryDTO queryDTO = FlightConvertor.convertToDTO(request);
-            FlightQueryResultDTO result = flightService.queryFlightsByDateRange(queryDTO);
+            // 日期范围条件已在 convertToDTO 中设置
+            FlightQueryResultDTO result = flightService.queryFlights(queryDTO);
             return HttpResponse.success(result);
         } catch (Exception e) {
             return HttpResponse.error("根据日期范围查询航班失败: " + e.getMessage());
@@ -112,7 +118,9 @@ public class FlightController {
     public HttpResponse<FlightQueryResultDTO> queryActiveFlights(@Valid FlightQueryRequest request) {
         try {
             FlightQueryDTO queryDTO = FlightConvertor.convertToDTO(request);
-            FlightQueryResultDTO result = flightService.queryActiveFlights(queryDTO);
+            // 设置查询有效航班的状态条件
+            queryDTO.setStatus("SCHEDULED");
+            FlightQueryResultDTO result = flightService.queryFlights(queryDTO);
             return HttpResponse.success(result);
         } catch (Exception e) {
             return HttpResponse.error("查询有效航班失败: " + e.getMessage());

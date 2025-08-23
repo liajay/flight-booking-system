@@ -1,6 +1,5 @@
 package com.liajay.flightbooking.inventory.dal.dataobject;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -9,37 +8,16 @@ import java.util.Objects;
  * 航班实体类
  * DAL层 - 数据访问对象
  */
-@Entity
-@Table(name = "flights")
 public class Flight {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "flight_number", unique = true, nullable = false, length = 20)
     private String flightNumber;
-
-    @Column(name = "airline", nullable = false, length = 100)
     private String airline;
-
-    @Column(name = "departure_city", nullable = false, length = 100)
     private String departureCity;
-
-    @Column(name = "arrival_city", nullable = false, length = 100)
     private String arrivalCity;
-
-    @Column(name = "departure_time", nullable = false)
     private LocalDateTime departureTime;
-
-    @Column(name = "arrival_time", nullable = false)
     private LocalDateTime arrivalTime;
-
-    @Column(name = "base_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal basePrice;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 20)
     private FlightStatus status;
 
     public Flight() {}

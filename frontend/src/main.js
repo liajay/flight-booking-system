@@ -3,12 +3,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
 import LoginView from './views/LoginView.vue'
 import DashboardView from './views/DashboardView.vue'
+import FlightListView from './views/FlightListView.vue'
 
 // 路由配置
 const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', component: LoginView },
-  { path: '/dashboard', component: DashboardView, meta: { requiresAuth: true } }
+  { path: '/dashboard', component: DashboardView, meta: { requiresAuth: true } },
+  { path: '/flights', component: FlightListView, meta: { requiresAuth: true } }
 ]
 
 const router = createRouter({

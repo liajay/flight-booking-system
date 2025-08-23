@@ -20,8 +20,7 @@ public class JwtAuthFilter implements Filter {
         
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        
-        // 获取请求路径
+
         String requestPath = httpRequest.getRequestURI();
         
         // 对于某些公共接口，可以跳过JWT验证（比如登录接口）
@@ -29,8 +28,7 @@ public class JwtAuthFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-        
-        // 获取Authorization头
+
         String authHeader = httpRequest.getHeader(AUTHORIZATION_HEADER);
         
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
@@ -38,8 +36,7 @@ public class JwtAuthFilter implements Filter {
             httpResponse.getWriter().write("{\"error\":\"Missing or invalid Authorization header\"}");
             return;
         }
-        
-        // 提取JWT token
+
         String token = authHeader.substring(BEARER_PREFIX.length());
         
         // 验证JWT token
@@ -48,8 +45,7 @@ public class JwtAuthFilter implements Filter {
             httpResponse.getWriter().write("{\"error\":\"Invalid JWT token\"}");
             return;
         }
-        
-        // 验证通过，继续处理请求
+
         chain.doFilter(request, response);
     }
     
@@ -62,21 +58,17 @@ public class JwtAuthFilter implements Filter {
     }
     
     private boolean isValidJwtToken(String token) {
-        // 简单的JWT格式验证
         if (token == null || token.isEmpty()) {
             return false;
         }
-        
-        // JWT应该有三个部分，用.分隔
+
         String[] parts = token.split("\\.");
         if (parts.length != 3) {
             return false;
         }
-        
-        // 这里可以添加更复杂的JWT签名验证逻辑
+
         // 目前只做基本格式验证
         try {
-            // 验证各部分是否为有效的Base64编码
             for (String part : parts) {
                 if (part.isEmpty()) {
                     return false;

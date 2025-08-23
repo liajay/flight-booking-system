@@ -1,0 +1,31 @@
+# MyBatis Configuration
+mybatis:
+  # 指定映射文件位置
+  mapper-locations: classpath*:/mapper/**/*.xml
+  # 指定实体类包路径
+  type-aliases-package: com.liajay.flightbooking.inventory.dal.dataobject
+  # MyBatis配置
+  configuration:
+    # 开启驼峰命名转换
+    map-underscore-to-camel-case: true
+    # 开启延迟加载
+    lazy-loading-enabled: true
+    # 开启缓存
+    cache-enabled: true
+    # 日志实现
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# PageHelper Configuration
+pagehelper:
+  # 数据库方言
+  helper-dialect: mysql
+  # 合理化分页参数
+  reasonable: true
+  # 支持通过Mapper接口参数来传递分页参数
+  support-methods-arguments: true
+  # 分页参数
+  params: count=countSql
+  # 自动识别数据库类型
+  auto-dialect: true
+  # 关闭不合理的分页请求
+  page-size-zero: true

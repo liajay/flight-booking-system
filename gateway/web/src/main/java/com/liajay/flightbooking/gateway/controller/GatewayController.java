@@ -12,26 +12,15 @@ import java.io.IOException;
 @RestController
 public class GatewayController {
     
-    @Autowired
-    private GatewayService gatewayService;
-    
-    // 处理所有用户服务相关请求
-    @RequestMapping(value = "/api/users/**", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+
+    private final GatewayService gatewayService;
+
+    public GatewayController(GatewayService gatewayService) {
+        this.gatewayService = gatewayService;
+    }
+
+    @RequestMapping(value = "/api/**", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
     public ResponseEntity<String> forwardUserRequest(HttpServletRequest request) throws IOException {
-        String body = readRequestBody(request);
-        return gatewayService.forwardRequest(request, body);
-    }
-    
-    // 处理所有订单服务相关请求
-    @RequestMapping(value = "/api/order/**", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
-    public ResponseEntity<String> forwardOrderRequest(HttpServletRequest request) throws IOException {
-        String body = readRequestBody(request);
-        return gatewayService.forwardRequest(request, body);
-    }
-    
-    // 处理所有库存服务相关请求
-    @RequestMapping(value = "/api/inventory/**", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
-    public ResponseEntity<String> forwardInventoryRequest(HttpServletRequest request) throws IOException {
         String body = readRequestBody(request);
         return gatewayService.forwardRequest(request, body);
     }

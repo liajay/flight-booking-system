@@ -16,7 +16,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
+ * @author liajay
+ *
  * 全局异常处理器
+ * @since 2025.8.21
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -34,53 +37,6 @@ public class GlobalExceptionHandler {
         return HttpResponse.error("参数校验失败: " + errorMessage);
     }
 
-    /**
-     * 处理绑定异常
-     */
-    @ExceptionHandler(BindException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public HttpResponse<String> handleBindException(BindException ex) {
-        List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
-        String errorMessage = fieldErrors.stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .collect(Collectors.joining(", "));
-        return HttpResponse.error("参数绑定失败: " + errorMessage);
-    }
-
-    /**
-     * 处理约束违反异常
-     */
-    @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public HttpResponse<String> handleConstraintViolationException(ConstraintViolationException ex) {
-        Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
-        String errorMessage = violations.stream()
-                .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
-                .collect(Collectors.joining(", "));
-        return HttpResponse.error("约束违反: " + errorMessage);
-    }
-
-    /**
-     * 处理非法参数异常
-     */
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public HttpResponse<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return HttpResponse.error("参数错误: " + ex.getMessage());
-    }
-
-    /**
-     * 处理空指针异常
-     */
-    @ExceptionHandler(NullPointerException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public HttpResponse<String> handleNullPointerException(NullPointerException ex) {
-        return HttpResponse.error("系统内部错误: 空指针异常");
-    }
-
-    /**
-     * 处理其他未捕获的异常
-     */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public HttpResponse<String> handleException(Exception ex) {
