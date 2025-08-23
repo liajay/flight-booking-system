@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>com.liajay.flightbooking</groupId>
-            <artifactId>order-model</artifactId>
+            <artifactId>order-util</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 

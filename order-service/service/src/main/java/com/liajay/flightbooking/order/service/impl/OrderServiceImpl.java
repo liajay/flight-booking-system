@@ -41,7 +41,6 @@ public class OrderServiceImpl implements OrderService {
         order.setFlightNumber(createOrderDTO.getFlightNumber());
         order.setSeatNumber(createOrderDTO.getSeatNumber());
         order.setAmount(createOrderDTO.getAmount());
-        order.setStatus("PENDING");
 
         int result = orderMapper.insert(order);
         if (result <= 0) {
@@ -102,7 +101,6 @@ public class OrderServiceImpl implements OrderService {
         vo.setFlightNumber(order.getFlightNumber());
         vo.setSeatNumber(order.getSeatNumber());
         vo.setAmount(order.getAmount());
-        vo.setStatus(order.getStatus());
         return vo;
     }
 

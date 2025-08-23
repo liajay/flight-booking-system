@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
             throw new LoginException("密码错误", loginDTO);
         }
 
-        String token = jwtUtil.generateToken(user.getId(), user.getUsername());
+        String token = jwtUtil.generateToken(user.getUserId(), user.getUsername());
 
         UserLoginResultDTO resultDTO = new UserLoginResultDTO();
         resultDTO.setToken(token);

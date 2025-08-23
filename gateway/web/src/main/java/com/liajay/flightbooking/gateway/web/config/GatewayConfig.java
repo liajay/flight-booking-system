@@ -1,4 +1,4 @@
-package com.liajay.flightbooking.gateway.config;
+package com.liajay.flightbooking.gateway.web.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

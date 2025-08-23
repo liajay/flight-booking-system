@@ -9,19 +9,16 @@
         <result column="flight_number" property="flightNumber" jdbcType="VARCHAR"/>
         <result column="seat_number" property="seatNumber" jdbcType="VARCHAR"/>
         <result column="amount" property="amount" jdbcType="DECIMAL"/>
-        <result column="status" property="status" jdbcType="VARCHAR"/>
-        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
-        <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, order_number, user_id, flight_number, seat_number, amount, status, gmt_create, gmt_modified
+        id, order_number, user_id, flight_number, seat_number, amount
     </sql>
 
     <!-- 插入订单 -->
     <insert id="insert" parameterType="com.liajay.flightbooking.order.dal.dataobject.Order" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO orders (order_number, user_id, flight_number, seat_number, amount, status, gmt_create, gmt_modified)
-        VALUES (#{orderNumber}, #{userId}, #{flightNumber}, #{seatNumber}, #{amount}, #{status}, #{gmtCreate}, #{gmtModified})
+        INSERT INTO orders (order_number, user_id, flight_number, seat_number, amount)
+        VALUES (#{orderNumber}, #{userId}, #{flightNumber}, #{seatNumber}, #{amount})
     </insert>
 
     <!-- 根据ID查询订单 -->

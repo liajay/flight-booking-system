@@ -1,7 +1,6 @@
-package com.liajay.flightbooking.gateway.controller;
+package com.liajay.flightbooking.gateway.web.controller;
 
-import com.liajay.flightbooking.gateway.service.GatewayService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.liajay.flightbooking.gateway.web.service.GatewayService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

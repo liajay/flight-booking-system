@@ -4,6 +4,7 @@ import com.liajay.flightbooking.inventory.dal.dataobject.Seat;
 import com.liajay.flightbooking.inventory.service.SeatService;
 import com.liajay.flightbooking.inventory.service.dto.SeatQueryDTO;
 import com.liajay.flightbooking.inventory.service.dto.result.SeatQueryResultDTO;
+import com.liajay.flightbooking.inventory.util.UserContextUtil;
 import com.liajay.flightbooking.inventory.web.convertor.SeatConvertor;
 import com.liajay.flightbooking.inventory.web.request.SeatQueryRequest;
 import com.liajay.flightbooking.inventory.web.response.HttpResponse;
@@ -132,4 +133,5 @@ public class SeatController {
             return HttpResponse.error("查询座位失败: " + e.getMessage());
         }
     }
+
 }

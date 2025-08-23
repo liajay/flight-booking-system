@@ -1,4 +1,4 @@
-package com.liajay.flightbooking.gateway.service;
+package com.liajay.flightbooking.gateway.web.service;
 
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -39,7 +39,8 @@ public class GatewayService {
                 return ResponseEntity.notFound().build();
             }
 
-            String targetPath = getTargetPath(request.getRequestURI());
+//            String targetPath = getTargetPath(request.getRequestURI());
+            String targetPath = request.getRequestURI();
             String targetUrl = targetServiceUrl + targetPath;
 
             if (request.getQueryString() != null) {
@@ -150,9 +151,11 @@ public class GatewayService {
     private String getTargetServiceUrl(String requestUri) {
         if (requestUri.startsWith("/api/users/")) {
             return USER_SERVICE_URL;
-        } else if (requestUri.startsWith("/api/order/")) {
+        } else if (requestUri.startsWith("/api/orders/")) {
             return ORDER_SERVICE_URL;
-        } else if (requestUri.startsWith("/api/inventory/")) {
+        } else if (requestUri.startsWith("/api/flights")) {
+            return INVENTORY_SERVICE_URL;
+        } else if (requestUri.startsWith("/api/seats")) {
             return INVENTORY_SERVICE_URL;
         }
         return null;
@@ -160,10 +163,10 @@ public class GatewayService {
     
     private String getTargetPath(String requestUri) {
         // 移除网关前缀，保留原始路径结构
-        if (requestUri.startsWith("/api/user/")) {
-            return requestUri.substring("/api/user".length());
-        } else if (requestUri.startsWith("/api/order/")) {
-            return requestUri.substring("/api/order".length());
+        if (requestUri.startsWith("/api/users/")) {
+            return requestUri.substring("/api/users".length());
+        } else if (requestUri.startsWith("/api/orders/")) {
+            return requestUri.substring("/api/orders".length());
         } else if (requestUri.startsWith("/api/inventory/")) {
             return requestUri.substring("/api/inventory".length());
         }

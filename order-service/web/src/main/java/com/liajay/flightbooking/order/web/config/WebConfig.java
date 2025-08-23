@@ -1,21 +1,29 @@
-package com.liajay.flightbooking.inventory.web.config;
+package com.liajay.flightbooking.order.web.config;
 
+import com.liajay.flightbooking.order.web.interceptor.UserContextInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.lang.NonNull;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * Web配置类 - 处理字符编码
+ * Web配置类 - 处理字符编码和拦截器
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    private final UserContextInterceptor userContextInterceptor;
+    
+    public WebConfig(UserContextInterceptor userContextInterceptor) {
+        this.userContextInterceptor = userContextInterceptor;
+    }
 
     /**
      * 字符编码过滤器
@@ -38,5 +46,15 @@ public class WebConfig implements WebMvcConfigurer {
         StringHttpMessageConverter stringConverter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
         stringConverter.setWriteAcceptCharset(false);
         converters.add(0, stringConverter);
+    }
+    
+    /**
+     * 注册拦截器
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(userContextInterceptor)
+                .addPathPatterns("/api/**")  // 只拦截API路径
+                .excludePathPatterns("/api/health"); // 排除健康检查接口
     }
 }

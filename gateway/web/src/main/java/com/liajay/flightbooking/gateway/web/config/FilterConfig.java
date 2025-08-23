@@ -1,6 +1,6 @@
-package com.liajay.flightbooking.gateway.config;
+package com.liajay.flightbooking.gateway.web.config;
 
-import com.liajay.flightbooking.gateway.filter.JwtAuthFilter;
+import com.liajay.flightbooking.gateway.web.filter.JwtAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;

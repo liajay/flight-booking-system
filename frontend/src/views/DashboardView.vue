@@ -26,7 +26,7 @@
         <div class="card">
           <h3>🎫 我的订单</h3>
           <p>管理您的订票记录</p>
-          <button class="card-btn">即将上线</button>
+          <button class="card-btn" @click="showOrderList">查看订单</button>
         </div>
         
         <div class="card">
@@ -43,6 +43,15 @@
           <button @click="activeTab = 'dashboard'" class="back-btn">返回首页</button>
         </div>
         <FlightList />
+      </div>
+      
+      <!-- 订单列表区域 -->
+      <div v-if="activeTab === 'orders'" class="order-section">
+        <div class="section-header">
+          <h3>我的订单</h3>
+          <button @click="activeTab = 'dashboard'" class="back-btn">返回首页</button>
+        </div>
+        <OrderList />
       </div>
       
       <!-- 用户信息模态框 -->
@@ -64,17 +73,19 @@
 <script>
 import { storage } from '../utils/index.js'
 import FlightList from './FlightListView.vue'
+import OrderList from './OrderList.vue'
 
 export default {
   name: 'DashboardView',
   components: {
-    FlightList
+    FlightList,
+    OrderList
   },
   data() {
     return {
       userInfo: {},
       showModal: false,
-      activeTab: 'dashboard' // 'dashboard' 或 'flights'
+      activeTab: 'dashboard' // 'dashboard', 'flights', 或 'orders'
     }
   },
   computed: {
@@ -98,6 +109,11 @@ export default {
     // 显示航班列表
     showFlightList() {
       this.activeTab = 'flights'
+    },
+    
+    // 显示订单列表
+    showOrderList() {
+      this.activeTab = 'orders'
     },
     
     // 显示用户信息
@@ -315,7 +331,7 @@ export default {
 }
 
 /* 航班列表区域样式 */
-.flight-section {
+.flight-section, .order-section {
   margin-top: 30px;
 }
 

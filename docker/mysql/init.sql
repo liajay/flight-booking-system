@@ -66,14 +66,11 @@ CREATE TABLE IF NOT EXISTS orders (
     `flight_number` VARCHAR(20) NOT NULL COMMENT '航班号',
     `seat_number` VARCHAR(10) NOT NULL COMMENT '座位号',
     `amount` DECIMAL(10,2) NOT NULL COMMENT '订单金额',
-    `status` VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT '订单状态：PENDING-待支付，PAID-已支付，CANCELLED-已取消，COMPLETED-已完成',
     `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `gmt_modified` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     INDEX idx_order_number (order_number),
     INDEX idx_user_id (user_id),
-    INDEX idx_flight_number (flight_number),
-    INDEX idx_status (status),
-    INDEX idx_create_time (gmt_create)
+    INDEX idx_flight_number (flight_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单表';
 
 INSERT INTO flights (flight_number, airline, departure_city, arrival_city, departure_time, arrival_time, base_price, status) VALUES
@@ -143,3 +140,6 @@ SELECT 'CZ9012', seat_number, seat_class, TRUE, price FROM (
 UPDATE seats SET is_available = FALSE WHERE flight_number = 'CA1234' AND seat_number IN ('1A', '1C', '7A', '7B', '12F');
 UPDATE seats SET is_available = FALSE WHERE flight_number = 'MU5678' AND seat_number IN ('2A', '2C', '8A', '8B', '15D', '15E');
 UPDATE seats SET is_available = FALSE WHERE flight_number = 'CZ9012' AND seat_number IN ('5A', '5B', '10A', '15C');
+
+INSERT INTO orders (order_number, user_id, flight_number, seat_number, amount)
+VALUES ('O001', 479887545757470720, 'CZ9012', '5A', 800);

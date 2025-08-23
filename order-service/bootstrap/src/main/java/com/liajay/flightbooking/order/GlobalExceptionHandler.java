@@ -1,6 +1,6 @@
 package com.liajay.flightbooking.order;
 
-import com.liajay.flightbooking.order.web.response.Result;
+import com.liajay.flightbooking.order.web.response.HttpResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -24,13 +24,13 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Result<String> handleValidationException(MethodArgumentNotValidException e) {
+    public HttpResponse<String> handleValidationException(MethodArgumentNotValidException e) {
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         StringBuilder errorMsg = new StringBuilder();
         for (FieldError fieldError : fieldErrors) {
             errorMsg.append(fieldError.getDefaultMessage()).append("; ");
         }
-        return Result.error("参数校验失败: " + errorMsg.toString());
+        return HttpResponse.error("参数校验失败: " + errorMsg.toString());
     }
 
     /**
@@ -38,13 +38,13 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Result<String> handleBindException(BindException e) {
+    public HttpResponse<String> handleBindException(BindException e) {
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         StringBuilder errorMsg = new StringBuilder();
         for (FieldError fieldError : fieldErrors) {
             errorMsg.append(fieldError.getDefaultMessage()).append("; ");
         }
-        return Result.error("参数绑定失败: " + errorMsg.toString());
+        return HttpResponse.error("参数绑定失败: " + errorMsg.toString());
     }
 
     /**
@@ -52,8 +52,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Result<String> handleRuntimeException(RuntimeException e) {
-        return Result.error("系统异常: " + e.getMessage());
+    public HttpResponse<String> handleRuntimeException(RuntimeException e) {
+        return HttpResponse.error("系统异常: " + e.getMessage());
     }
 
     /**
@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Result<String> handleException(Exception e) {
-        return Result.error("未知异常: " + e.getMessage());
+    public HttpResponse<String> handleException(Exception e) {
+        return HttpResponse.error("未知异常: " + e.getMessage());
     }
 }

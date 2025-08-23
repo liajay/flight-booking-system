@@ -1,18 +1,27 @@
-package com.liajay.flightbooking.gateway.filter;
+package com.liajay.flightbooking.gateway.web.filter;
 
-
+import com.liajay.flightbooking.gateway.util.JwtUtil;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.*;
 
 @Component
 public class JwtAuthFilter implements Filter {
     
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final String USER_ID_HEADER = "X-User-Id";
+    
+    private final JwtUtil jwtUtil;
+    
+    public JwtAuthFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
     
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -39,14 +48,41 @@ public class JwtAuthFilter implements Filter {
 
         String token = authHeader.substring(BEARER_PREFIX.length());
         
-        // 验证JWT token
-        if (!isValidJwtToken(token)) {
+        // 验证JWT token并提取用户信息
+        try {
+            if (!isValidJwtToken(token)) {
+                httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                httpResponse.getWriter().write("{\"error\":\"Invalid JWT token\"}");
+                return;
+            }
+            
+            // 从JWT中提取userId
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            
+            // 创建包装的请求，添加userId到请求头
+            HttpServletRequestWrapper wrappedRequest = new HttpServletRequestWrapper(httpRequest) {
+                @Override
+                public String getHeader(String name) {
+                    if (USER_ID_HEADER.equals(name)) {
+                        return userId.toString();
+                    }
+                    return super.getHeader(name);
+                }
+                
+                @Override
+                public Enumeration<String> getHeaderNames() {
+                    List<String> names = Collections.list(super.getHeaderNames());
+                    names.add(USER_ID_HEADER);
+                    return Collections.enumeration(names);
+                }
+            };
+            
+            chain.doFilter(wrappedRequest, response);
+            
+        } catch (Exception e) {
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            httpResponse.getWriter().write("{\"error\":\"Invalid JWT token\"}");
-            return;
+            httpResponse.getWriter().write("{\"error\":\"JWT parsing failed: " + e.getMessage() + "\"}");
         }
-
-        chain.doFilter(request, response);
     }
     
     private boolean isPublicEndpoint(String path) {
@@ -62,19 +98,9 @@ public class JwtAuthFilter implements Filter {
             return false;
         }
 
-        String[] parts = token.split("\\.");
-        if (parts.length != 3) {
-            return false;
-        }
-
-        // 目前只做基本格式验证
         try {
-            for (String part : parts) {
-                if (part.isEmpty()) {
-                    return false;
-                }
-            }
-            return true;
+            // 使用JwtUtil验证token的有效性
+            return !jwtUtil.isTokenExpired(token);
         } catch (Exception e) {
             return false;
         }
