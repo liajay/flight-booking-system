@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liajay.flightbooking.order.dal.mapper.OrderMapper">
+
+    <resultMap id="BaseResultMap" type="com.liajay.flightbooking.order.dal.dataobject.Order">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="order_number" property="orderNumber" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="flight_number" property="flightNumber" jdbcType="VARCHAR"/>
+        <result column="seat_number" property="seatNumber" jdbcType="VARCHAR"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, order_number, user_id, flight_number, seat_number, amount, status, gmt_create, gmt_modified
+    </sql>
+
+    <!-- 插入订单 -->
+    <insert id="insert" parameterType="com.liajay.flightbooking.order.dal.dataobject.Order" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO orders (order_number, user_id, flight_number, seat_number, amount, status, gmt_create, gmt_modified)
+        VALUES (#{orderNumber}, #{userId}, #{flightNumber}, #{seatNumber}, #{amount}, #{status}, #{gmtCreate}, #{gmtModified})
+    </insert>
+
+    <!-- 根据ID查询订单 -->
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM orders
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据订单编号查询订单 -->
+    <select id="findByOrderNumber" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM orders
+        WHERE order_number = #{orderNumber}
+    </select>
+
+    <!-- 根据用户ID分页查询订单 -->
+    <select id="findByUserId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM orders
+        WHERE user_id = #{userId}
+        ORDER BY gmt_create DESC
+        <if test="pageSize > 0">
+            LIMIT #{offset}, #{pageSize}
+        </if>
+    </select>
+
+    <!-- 根据用户ID统计订单总数 -->
+    <select id="countByUserId" resultType="long">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 更新订单状态 -->
+    <update id="updateStatus">
+        UPDATE orders
+        SET status = #{status}, gmt_modified = NOW()
+        WHERE id = #{id}
+    </update>
+
+</mapper>

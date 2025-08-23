@@ -58,6 +58,24 @@ CREATE TABLE IF NOT EXISTS seats (
     FOREIGN KEY (flight_number) REFERENCES flights(flight_number) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='座位表';
 
+-- 创建订单表
+CREATE TABLE IF NOT EXISTS orders (
+    `id` BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID',
+    `order_number` VARCHAR(32) NOT NULL UNIQUE COMMENT '订单编号',
+    `user_id` BIGINT NOT NULL COMMENT '用户ID',
+    `flight_number` VARCHAR(20) NOT NULL COMMENT '航班号',
+    `seat_number` VARCHAR(10) NOT NULL COMMENT '座位号',
+    `amount` DECIMAL(10,2) NOT NULL COMMENT '订单金额',
+    `status` VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT '订单状态：PENDING-待支付，PAID-已支付，CANCELLED-已取消，COMPLETED-已完成',
+    `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `gmt_modified` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    INDEX idx_order_number (order_number),
+    INDEX idx_user_id (user_id),
+    INDEX idx_flight_number (flight_number),
+    INDEX idx_status (status),
+    INDEX idx_create_time (gmt_create)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单表';
+
 INSERT INTO flights (flight_number, airline, departure_city, arrival_city, departure_time, arrival_time, base_price, status) VALUES
 ('CA1234', '中国国际航空', '北京', '上海', '2025-08-21 08:00:00', '2025-08-21 10:30:00', 800.00, 'SCHEDULED'),
 ('MU5678', '中国东方航空', '上海', '广州', '2025-08-21 14:30:00', '2025-08-21 17:00:00', 900.00, 'SCHEDULED'),
