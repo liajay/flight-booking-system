@@ -1,0 +1,85 @@
+@startuml
+title 库存服务领域模型
+
+class Flight {
+    -Long id
+    -String flightNumber
+    -String airline
+    -String departureCity
+    -String arrivalCity
+    -LocalDateTime departureTime
+    -LocalDateTime arrivalTime
+    -BigDecimal basePrice
+    -FlightStatus status
+    -LocalDateTime createdTime
+    -LocalDateTime updatedTime
+}
+
+class Seat {
+    -Long id
+    -Long flightId
+    -String seatNumber
+    -SeatClass seatClass
+    -Boolean isAvailable
+    -BigDecimal price
+    -LocalDateTime createdTime
+    -LocalDateTime updatedTime
+}
+
+enum FlightStatus {
+    SCHEDULED
+    DELAYED
+    CANCELLED
+    DEPARTED
+    ARRIVED
+}
+
+enum SeatClass {
+    ECONOMY
+    BUSINESS
+    FIRST
+}
+
+Flight ||--o{ Seat : contains
+
+note right of Flight::id
+  航班表id,自增
+end note
+
+note right of Flight::flightNumber
+  航班号,唯一标识
+end note
+
+note right of Flight::airline
+  航空公司
+end note
+
+note right of Flight::departureCity
+  出发城市
+end note
+
+note right of Flight::arrivalCity
+  到达城市
+end note
+
+note right of Flight::basePrice
+  航班基础价格
+end note
+
+note right of Seat::id
+  座位表id,自增
+end note
+
+note right of Seat::seatNumber
+  座位号,如"1A","12B"
+end note
+
+note right of Seat::isAvailable
+  座位是否可用
+end note
+
+note right of Seat::price
+  该座位的实际价格
+end note
+
+@enduml

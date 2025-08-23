@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liajay.flightbooking.inventory.dal.mapper.FlightMapper">
+
+    <!-- Flight实体映射结果集 -->
+    <resultMap id="FlightResultMap" type="com.liajay.flightbooking.inventory.dal.dataobject.Flight">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="flight_number" property="flightNumber" jdbcType="VARCHAR"/>
+        <result column="airline" property="airline" jdbcType="VARCHAR"/>
+        <result column="departure_city" property="departureCity" jdbcType="VARCHAR"/>
+        <result column="arrival_city" property="arrivalCity" jdbcType="VARCHAR"/>
+        <result column="departure_time" property="departureTime" jdbcType="TIMESTAMP"/>
+        <result column="arrival_time" property="arrivalTime" jdbcType="TIMESTAMP"/>
+        <result column="base_price" property="basePrice" jdbcType="DECIMAL"/>
+        <result column="status" property="status" jdbcType="VARCHAR" 
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+    </resultMap>
+
+    <!-- SQL片段：基础列 -->
+    <sql id="Base_Column_List">
+        id, flight_number, airline, departure_city, arrival_city,
+        departure_time, arrival_time, base_price, status
+    </sql>
+
+    <!-- SQL片段：动态WHERE条件 -->
+    <sql id="Dynamic_Where_Conditions">
+        <where>
+            <if test="flightNumber != null and flightNumber != ''">
+                AND flight_number = #{flightNumber}
+            </if>
+            <if test="airline != null and airline != ''">
+                AND airline = #{airline}
+            </if>
+            <if test="departureCity != null and departureCity != ''">
+                AND departure_city = #{departureCity}
+            </if>
+            <if test="arrivalCity != null and arrivalCity != ''">
+                AND arrival_city = #{arrivalCity}
+            </if>
+            <if test="startTime != null">
+                AND departure_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND departure_time &lt;= #{endTime}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 根据航班号查询航班 -->
+    <select id="findByFlightNumber" resultMap="FlightResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM flights
+        WHERE flight_number = #{flightNumber}
+    </select>
+
+    <!-- 复杂条件查询航班（支持动态WHERE条件和分页） -->
+    <select id="findByConditions" resultMap="FlightResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM flights
+        <include refid="Dynamic_Where_Conditions"/>
+        ORDER BY departure_time ASC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 根据条件统计航班总数 -->
+    <select id="countByConditions" resultType="long">
+        SELECT COUNT(*)
+        FROM flights
+        <include refid="Dynamic_Where_Conditions"/>
+    </select>
+
+</mapper>

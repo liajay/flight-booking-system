@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liajay.flightbooking.inventory.dal.mapper.SeatMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.liajay.flightbooking.inventory.dal.dataobject.Seat">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="flight_number" property="flightNumber" jdbcType="VARCHAR"/>
+        <result column="seat_number" property="seatNumber" jdbcType="VARCHAR"/>
+        <result column="seat_class" property="seatClass" jdbcType="VARCHAR"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <result column="is_available" property="isAvailable" jdbcType="BOOLEAN"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <!-- 基础列定义 -->
+    <sql id="Base_Column_List">
+        id, flight_number, seat_number, seat_class, is_available, price
+    </sql>
+
+    <!-- 动态查询条件片段 -->
+    <sql id="Dynamic_Where_Clause">
+        <where>
+            <if test="flightNumber != null and flightNumber != ''">
+                AND flight_number = #{flightNumber}
+            </if>
+            <if test="seatClass != null">
+                AND seat_class = #{seatClass}
+            </if>
+            <if test="isAvailable != null">
+                AND is_available = #{isAvailable}
+            </if>
+            <if test="minPrice != null">
+                AND price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                AND price &lt;= #{maxPrice}
+            </if>
+            <if test="seatNumberStart != null and seatNumberStart != ''">
+                AND seat_number &gt;= #{seatNumberStart}
+            </if>
+            <if test="seatNumberEnd != null and seatNumberEnd != ''">
+                AND seat_number &lt;= #{seatNumberEnd}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 根据航班号和座位号查询座位 -->
+    <select id="findByFlightNumberAndSeatNumber" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seats
+        WHERE flight_number = #{flightNumber}
+        AND seat_number = #{seatNumber}
+        LIMIT 1
+    </select>
+
+    <!-- 复杂条件动态查询（支持分页） -->
+    <select id="findByConditions" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seats
+        <include refid="Dynamic_Where_Clause"/>
+        ORDER BY seat_class, seat_number
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 根据条件统计座位总数 -->
+    <select id="countByConditions" resultType="long">
+        SELECT COUNT(*)
+        FROM seats
+        <include refid="Dynamic_Where_Clause"/>
+    </select>
+
+</mapper>

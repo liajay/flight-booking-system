@@ -1,0 +1,28 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: flight-booking-gateway
+
+logging:
+  level:
+    com.liajay.flightbooking.gateway: DEBUG
+    org.springframework.web: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# 网关配置
+gateway:
+  services:
+    user-service:
+      url: http://localhost:8081
+      path: /api/user/**
+    order-service:
+      url: http://localhost:8082
+      path: /api/order/**
+    inventory-service:
+      url: http://localhost:8083
+      path: /api/inventory/**

@@ -1,7 +1,8 @@
 package com.liajay.flightbooking.dal.repository;
 
-import com.liajay.flightbooking.UserServiceApplication;
-import com.liajay.flightbooking.dal.dataobject.User;
+import com.liajay.flightbooking.user.UserServiceApplication;
+import com.liajay.flightbooking.user.dal.dataobject.User;
+import com.liajay.flightbooking.user.dal.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

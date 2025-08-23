@@ -20,6 +20,20 @@
         <module>user-service/web</module>
         <module>user-service/service</module>
         <module>order-service/bootstrap</module>
+        <module>order-service/dal</module>
+        <module>order-service/model</module>
+        <module>order-service/service</module>
+        <module>order-service/util</module>
+        <module>order-service/web</module>
+        <module>gateway/bootstrap</module>
+        <module>gateway/util</module>
+        <module>gateway/web</module>
+        <module>inventory-service/bootstrap</module>
+        <module>inventory-service/dal</module>
+        <module>inventory-service/model</module>
+        <module>inventory-service/service</module>
+        <module>inventory-service/util</module>
+        <module>inventory-service/web</module>
     </modules>
 
     <properties>
@@ -47,6 +61,10 @@
         <jwt.version>0.11.5</jwt.version>
         <!-- Jackson 版本 -->
         <jackson.version>2.15.2</jackson.version>
+        <!-- MyBatis 版本 -->
+        <mybatis.version>2.3.1</mybatis.version>
+        <!-- PageHelper 版本 -->
+        <pagehelper.version>1.4.6</pagehelper.version>
     </properties>
 
     <dependencyManagement>
@@ -78,11 +96,18 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- MyBatis Plus -->
+            <!-- MyBatis Spring Boot Starter -->
             <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-boot-starter</artifactId>
-                <version>${mybatis-plus.version}</version>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis.version}</version>
+            </dependency>
+
+            <!-- PageHelper分页插件 -->
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>${pagehelper.version}</version>
             </dependency>
 
             <!-- Druid 数据库连接池 -->

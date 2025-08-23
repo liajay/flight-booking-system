@@ -1,11 +1,11 @@
 package com.liajay.flightbooking.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.liajay.flightbooking.UserServiceApplication;
-import com.liajay.flightbooking.dal.dataobject.User;
-import com.liajay.flightbooking.web.request.UserLoginRequest;
-import com.liajay.flightbooking.web.request.UserRegisterRequest;
-import com.liajay.flightbooking.web.response.HttpResponse;
+import com.liajay.flightbooking.user.UserServiceApplication;
+import com.liajay.flightbooking.user.dal.dataobject.User;
+import com.liajay.flightbooking.user.web.request.UserLoginRequest;
+import com.liajay.flightbooking.user.web.request.UserRegisterRequest;
+import com.liajay.flightbooking.user.web.response.HttpResponse;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

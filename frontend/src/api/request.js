@@ -28,11 +28,18 @@ api.interceptors.response.use(
   },
   error => {
     console.error('API Error:', error)
+    
+    // 只有在401未授权且不在登录页面时才跳转到登录页
     if (error.response && error.response.status === 401) {
-      // Token过期，清除本地存储并跳转到登录页
+      // Token过期或无效，清除本地存储
       localStorage.removeItem('token')
       localStorage.removeItem('user')
-      window.location.href = '/login'
+      
+      // 只有当前不在登录页面时才跳转到登录页
+      // 如果已经在登录页面，让组件自己处理401错误显示
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/') {
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }
