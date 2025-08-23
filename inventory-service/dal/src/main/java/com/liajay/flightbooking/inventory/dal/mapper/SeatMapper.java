@@ -10,7 +10,6 @@ import java.util.List;
 
 /**
  * 座位MyBatis Mapper接口
- * 精简版：保留核心通用查询方法
  * 
  * @author liajay
  */
@@ -24,7 +23,7 @@ public interface SeatMapper {
                                          @Param("seatNumber") String seatNumber);
 
     /**
-     * 复杂查询：支持多条件动态查询
+     * 多条件动态查询
      */
     List<Seat> findByConditions(@Param("flightNumber") String flightNumber,
                                 @Param("seatClass") SeatClass seatClass,
@@ -46,4 +45,6 @@ public interface SeatMapper {
                           @Param("maxPrice") BigDecimal maxPrice,
                           @Param("seatNumberStart") String seatNumberStart,
                           @Param("seatNumberEnd") String seatNumberEnd);
+
+
 }

@@ -259,73 +259,7 @@ export default {
     // 搜索航班
     async searchFlights() {
       this.searchParams.page = 0 // 重置到第一页
-      
-      // 如果有出发地和目的地，使用路线查询
-      if (this.searchParams.departureCity && this.searchParams.arrivalCity) {
-        await this.searchFlightsByRoute()
-      } else if (this.searchParams.airline) {
-        await this.searchFlightsByAirline()
-      } else {
-        await this.loadFlights()
-      }
-    },
-
-    // 按路线搜索
-    async searchFlightsByRoute() {
-      this.loading = true
-      this.error = null
-      
-      try {
-        const params = { ...this.searchParams }
-        delete params.departureCity
-        delete params.arrivalCity
-        
-        const response = await flightApi.queryFlightsByRoute(
-          this.searchParams.departureCity,
-          this.searchParams.arrivalCity,
-          params
-        )
-        
-        if (response.data && response.data.success) {
-          // 适配新的API返回数据结构
-          this.flightData = response.data.data
-        } else {
-          this.error = response.data?.message || '搜索航班失败'
-        }
-      } catch (error) {
-        console.error('Search flights by route error:', error)
-        this.error = error.response?.data?.message || '搜索失败'
-      } finally {
-        this.loading = false
-      }
-    },
-
-    // 按航空公司搜索
-    async searchFlightsByAirline() {
-      this.loading = true
-      this.error = null
-      
-      try {
-        const params = { ...this.searchParams }
-        delete params.airline
-        
-        const response = await flightApi.queryFlightsByAirline(
-          this.searchParams.airline,
-          params
-        )
-        
-        if (response.data && response.data.success) {
-          // 适配新的API返回数据结构
-          this.flightData = response.data.data
-        } else {
-          this.error = response.data?.message || '搜索航班失败'
-        }
-      } catch (error) {
-        console.error('Search flights by airline error:', error)
-        this.error = error.response?.data?.message || '搜索失败'
-      } finally {
-        this.loading = false
-      }
+      await this.loadFlights() // 直接使用统一的加载方法
     },
 
     // 加载有效航班
@@ -335,13 +269,14 @@ export default {
       
       try {
         const params = {
+          status: 'SCHEDULED', // 查询已安排状态的航班
           page: this.searchParams.page,
           size: this.searchParams.size,
           sortBy: this.searchParams.sortBy,
           sortDirection: this.searchParams.sortDirection
         }
         
-        const response = await flightApi.queryActiveFlights(params)
+        const response = await flightApi.queryFlights(params) // 使用统一的查询接口
         
         if (response.data && response.data.success) {
           // 适配新的API返回数据结构

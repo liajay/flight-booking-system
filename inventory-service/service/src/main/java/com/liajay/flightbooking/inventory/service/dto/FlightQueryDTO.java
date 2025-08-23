@@ -3,10 +3,6 @@ package com.liajay.flightbooking.inventory.service.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * 航班查询DTO - MyBatis增强版
- * 支持更丰富的查询条件和分页功能
- */
 public class FlightQueryDTO {
     private String flightNumber;
     private String airline;

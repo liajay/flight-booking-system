@@ -39,7 +39,6 @@ public class FlightServiceImpl implements FlightService {
         FlightStatus statusEnum = parseFlightStatus(queryDTO.getStatus());
         
         if (queryDTO.isPaginationEnabled()) {
-            // 先获取总数
             long total = flightMapper.countByConditions(
                 queryDTO.getFlightNumber(),
                 queryDTO.getAirline(),
@@ -49,11 +48,9 @@ public class FlightServiceImpl implements FlightService {
                 null,
                 statusEnum
             );
-            
-            // 计算分页参数
+
             int offset = queryDTO.getPage() * queryDTO.getSize();
-            
-            // 分页查询
+
             List<Flight> flights = flightMapper.findByConditions(
                 queryDTO.getFlightNumber(),
                 queryDTO.getAirline(),
@@ -66,7 +63,6 @@ public class FlightServiceImpl implements FlightService {
                 queryDTO.getSize()
             );
             
-            // 转换为VO并构建分页结果
             List<FlightVO> flightVOs = flights.stream()
                 .map(this::convertToVO)
                 .collect(Collectors.toList());
@@ -125,11 +121,12 @@ public class FlightServiceImpl implements FlightService {
             flight.getStatus().name(),
             flight.getStatus().getDescription()
         );
-        
-        // 暂时设置为0，避免额外的数据库查询
-        vo.setTotalSeats(0L);
-        vo.setAvailableSeats(0L);
-        
+
+        long totalSeats = seatMapper.countByConditions(flight.getFlightNumber(), null, null, null, null, null, null);
+        long availableSeats = seatMapper.countByConditions(flight.getFlightNumber(), null, true, null, null, null, null);
+        vo.setTotalSeats(totalSeats);
+        vo.setAvailableSeats(availableSeats);
+
         return vo;
     }
 }

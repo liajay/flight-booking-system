@@ -4,7 +4,6 @@ import java.util.List;
 
 /**
  * 分页结果封装类
- * 替代 PageHelper 的 PageInfo
  *
  * @author liajay
  */

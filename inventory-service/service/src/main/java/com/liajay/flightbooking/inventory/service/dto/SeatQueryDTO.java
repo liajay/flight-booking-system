@@ -2,10 +2,6 @@ package com.liajay.flightbooking.inventory.service.dto;
 
 import java.math.BigDecimal;
 
-/**
- * 座位查询DTO - MyBatis增强版
- * 支持更丰富的查询条件和分页功能
- */
 public class SeatQueryDTO {
     private String flightNumber;
     private String seatClass;

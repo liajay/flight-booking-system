@@ -3,8 +3,14 @@ spring:
     name: inventory-service
   profiles:
     active: local
+  # HTTP编码配置
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
   datasource:
-    url: jdbc:mysql://localhost:3306/flight_booking?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/flight_booking?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&characterEncoding=utf8&useUnicode=true
     username: root
     password: root123
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -36,6 +42,9 @@ pagehelper:
 
 server:
   port: 8082
+  # Tomcat编码配置
+  tomcat:
+    uri-encoding: UTF-8
 
 logging:
   level:

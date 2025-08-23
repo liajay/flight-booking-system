@@ -22,7 +22,6 @@ public interface FlightMapper {
 
     /**
      * 复杂条件查询航班
-     * 支持多种查询条件的组合查询，使用动态SQL
      */
     List<Flight> findByConditions(
             @Param("flightNumber") String flightNumber,
