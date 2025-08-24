@@ -1,6 +1,6 @@
 -- 创建业务数据库
-CREATE DATABASE IF NOT EXISTS flight_booking;
-CREATE DATABASE IF NOT EXISTS flight_booking_test;
+CREATE DATABASE IF NOT EXISTS flight_booking DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS flight_booking_test DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 -- 创建Nacos数据库
 CREATE DATABASE IF NOT EXISTS nacos DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
@@ -141,5 +141,3 @@ UPDATE seats SET is_available = FALSE WHERE flight_number = 'CA1234' AND seat_nu
 UPDATE seats SET is_available = FALSE WHERE flight_number = 'MU5678' AND seat_number IN ('2A', '2C', '8A', '8B', '15D', '15E');
 UPDATE seats SET is_available = FALSE WHERE flight_number = 'CZ9012' AND seat_number IN ('5A', '5B', '10A', '15C');
 
-INSERT INTO orders (order_number, user_id, flight_number, seat_number, amount)
-VALUES ('O001', 479887545757470720, 'CZ9012', '5A', 800);
