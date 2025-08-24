@@ -46,5 +46,15 @@ public interface SeatMapper {
                           @Param("seatNumberStart") String seatNumberStart,
                           @Param("seatNumberEnd") String seatNumberEnd);
 
+    /**
+     * 查找指定航班的第一个可用座位
+     */
+    Seat findFirstAvailableSeat(@Param("flightNumber") String flightNumber);
+
+    /**
+     * 更新座位可用状态
+     */
+    int updateSeatAvailability(@Param("id") Long id, @Param("isAvailable") Boolean isAvailable);
+
 
 }

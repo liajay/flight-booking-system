@@ -5,7 +5,9 @@ import com.liajay.flightbooking.order.dal.mapper.OrderMapper;
 import com.liajay.flightbooking.order.model.vo.OrderVO;
 import com.liajay.flightbooking.order.service.OrderService;
 import com.liajay.flightbooking.order.service.dto.CreateOrderDTO;
+import com.liajay.flightbooking.order.service.dto.CreateOrderWithSeatAllocationDTO;
 import com.liajay.flightbooking.order.service.dto.OrderQueryResultDTO;
+import com.liajay.flightbooking.order.util.InventoryServiceClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +26,14 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
     
     private final OrderMapper orderMapper;
+    private final InventoryServiceClient inventoryServiceClient;
     
     // 简单的订单号生成器（实际项目中可能需要更复杂的分布式ID生成策略）
     private static final AtomicLong ORDER_NUMBER_COUNTER = new AtomicLong(1);
 
-    public OrderServiceImpl(OrderMapper orderMapper) {
+    public OrderServiceImpl(OrderMapper orderMapper, InventoryServiceClient inventoryServiceClient) {
         this.orderMapper = orderMapper;
+        this.inventoryServiceClient = inventoryServiceClient;
     }
 
     @Override
@@ -102,6 +106,32 @@ public class OrderServiceImpl implements OrderService {
         vo.setSeatNumber(order.getSeatNumber());
         vo.setAmount(order.getAmount());
         return vo;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public OrderVO createOrderWithSeatAllocation(CreateOrderWithSeatAllocationDTO createOrderDTO) {
+        // 调用库存服务分配座位
+        InventoryServiceClient.SeatInfo seatInfo = inventoryServiceClient.allocateSeat(createOrderDTO.getFlightNumber());
+        
+        if (seatInfo == null) {
+            throw new RuntimeException("该航班没有可用座位");
+        }
+        
+        // 创建订单
+        Order order = new Order();
+        order.setOrderNumber(generateOrderNumber());
+        order.setUserId(createOrderDTO.getUserId());
+        order.setFlightNumber(createOrderDTO.getFlightNumber());
+        order.setSeatNumber(seatInfo.getSeatNumber());
+        order.setAmount(seatInfo.getPrice());
+
+        int result = orderMapper.insert(order);
+        if (result <= 0) {
+            throw new RuntimeException("创建订单失败");
+        }
+
+        return convertToVO(order);
     }
 
 }

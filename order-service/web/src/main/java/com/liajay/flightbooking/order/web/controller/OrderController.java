@@ -3,9 +3,11 @@ package com.liajay.flightbooking.order.web.controller;
 import com.liajay.flightbooking.order.model.vo.OrderVO;
 import com.liajay.flightbooking.order.service.OrderService;
 import com.liajay.flightbooking.order.service.dto.CreateOrderDTO;
+import com.liajay.flightbooking.order.service.dto.CreateOrderWithSeatAllocationDTO;
 import com.liajay.flightbooking.order.service.dto.OrderQueryResultDTO;
 import com.liajay.flightbooking.order.util.UserContextUtil;
 import com.liajay.flightbooking.order.web.request.CreateOrderRequest;
+import com.liajay.flightbooking.order.web.request.CreateOrderWithSeatAllocationRequest;
 import com.liajay.flightbooking.order.web.response.HttpResponse;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +24,8 @@ public class OrderController {
     
     private final OrderService orderService;
 
-    private final UserContextUtil userContextUtil;
-
-    public OrderController(OrderService orderService, UserContextUtil userContextUtil) {
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
-        this.userContextUtil = userContextUtil;
     }
 
     /**
@@ -88,6 +87,27 @@ public class OrderController {
             return HttpResponse.success(result);
         } catch (Exception e) {
             return HttpResponse.error("查询订单列表失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 创建订单并自动分配座位
+     * 
+     * @param request 创建订单请求
+     * @return 创建结果
+     */
+    @PostMapping("/with-seat-allocation")
+    public HttpResponse<OrderVO> createOrderWithSeatAllocation(@Valid @RequestBody CreateOrderWithSeatAllocationRequest request) {
+        try {
+            CreateOrderWithSeatAllocationDTO createOrderDTO = new CreateOrderWithSeatAllocationDTO(
+                    UserContextUtil.getCurrentUserId(),
+                    request.getFlightNumber()
+            );
+            
+            OrderVO orderVO = orderService.createOrderWithSeatAllocation(createOrderDTO);
+            return HttpResponse.success(orderVO);
+        } catch (Exception e) {
+            return HttpResponse.error("创建订单失败：" + e.getMessage());
         }
     }
 }
