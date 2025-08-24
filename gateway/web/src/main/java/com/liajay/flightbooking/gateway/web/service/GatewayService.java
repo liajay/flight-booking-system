@@ -46,8 +46,9 @@ public class GatewayService {
             if (request.getQueryString() != null) {
                 targetUrl += "?" + request.getQueryString();
             }
-            
-            return forwardWithWebClient(targetUrl, request, body);
+
+            ResponseEntity<String> ret = forwardWithWebClient(targetUrl, request, body);
+            return ret;
             
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
