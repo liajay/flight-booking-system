@@ -11,6 +11,7 @@ import com.liajay.flightbooking.inventory.service.dto.PageResult;
 import com.liajay.flightbooking.inventory.service.dto.SeatQueryDTO;
 import com.liajay.flightbooking.inventory.service.dto.result.SeatQueryResultDTO;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -134,5 +135,28 @@ public class SeatServiceImpl implements SeatService {
         }
 
         return vo;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Seat allocateSeat(String flightNumber) {
+        // 查找第一个可用座位
+        Seat availableSeat = seatMapper.findFirstAvailableSeat(flightNumber);
+        
+        if (availableSeat == null) {
+            return null; // 没有可用座位
+        }
+        
+        // 将座位标记为不可用
+        int updateResult = seatMapper.updateSeatAvailability(availableSeat.getId(), false);
+        
+        if (updateResult <= 0) {
+            throw new RuntimeException("更新座位状态失败");
+        }
+        
+        // 更新返回对象的状态
+        availableSeat.setIsAvailable(false);
+        
+        return availableSeat;
     }
 }

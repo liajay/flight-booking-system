@@ -28,4 +28,13 @@ public interface SeatService {
      * - 排序查询：设置排序参数
      */
     SeatQueryResultDTO querySeats(SeatQueryDTO queryDTO);
+
+    /**
+     * 为指定航班分配一个座位
+     * 查找并分配一个可用座位，将其标记为不可用
+     * 
+     * @param flightNumber 航班号
+     * @return 分配的座位，如果没有可用座位则返回null
+     */
+    Seat allocateSeat(String flightNumber);
 }

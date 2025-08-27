@@ -1,8 +1,25 @@
 <template>
   <div class="flight-list-container">
+    <!-- 成功提示 -->
+    <div v-if="successMessage" class="success-toast" @click="successMessage = null">
+      <div class="toast-content">
+        <span class="toast-icon">✅</span>
+        <span class="toast-message">{{ successMessage }}</span>
+        <span class="toast-close">✕</span>
+      </div>
+    </div>
+
     <!-- 搜索筛选区域 -->
     <div class="search-section">
       <h3>🔍 航班搜索</h3>
+      
+      <!-- 临时测试按钮 -->
+      <div style="margin-bottom: 10px;">
+        <button @click="testAPI" style="background: #ff6b6b; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer;">
+          测试API调用
+        </button>
+      </div>
+      
       <div class="search-form">
         <div class="form-row">
           <div class="form-group">
@@ -154,11 +171,13 @@
           <div class="flight-actions">
             <button 
               class="book-btn" 
-              :disabled="flight.status === 'CANCELLED' || flight.availableSeats === 0"
+              :disabled="flight.status === 'CANCELLED' || flight.availableSeats === 0 || bookingLoading[flight.flightNumber]"
               @click="bookFlight(flight)"
             >
-              {{ flight.status === 'CANCELLED' ? '已取消' : 
-                 flight.availableSeats === 0 ? '已售罄' : '预订' }}
+              <span v-if="bookingLoading[flight.flightNumber]" class="loading-spinner">⏳</span>
+              {{ bookingLoading[flight.flightNumber] ? '订票中...' :
+                 flight.status === 'CANCELLED' ? '已取消' : 
+                 flight.availableSeats === 0 ? '已售罄' : '立即订票' }}
             </button>
           </div>
         </div>
@@ -199,7 +218,9 @@
 </template>
 
 <script>
+import { reactive } from 'vue'
 import flightApi from '../api/flight.js'
+import { createOrderWithSeatAllocation } from '../api/order.js'
 
 export default {
   name: 'FlightList',
@@ -208,6 +229,8 @@ export default {
       loading: false,
       error: null,
       flightData: null,
+      bookingLoading: reactive({}), // 使用reactive确保响应性
+      successMessage: null, // 成功提示消息
       searchParams: {
         departureCity: '',
         arrivalCity: '',
@@ -224,6 +247,24 @@ export default {
     this.loadFlights()
   },
   methods: {
+    // 测试API调用
+    async testAPI() {
+      console.log('开始测试API调用')
+      try {
+        const testData = {
+          userId: 479887545757470720,
+          flightNumber: 'CA1234'
+        }
+        console.log('测试数据:', testData)
+        const response = await createOrderWithSeatAllocation(testData)
+        console.log('测试响应:', response)
+        alert('API调用成功，请查看控制台')
+      } catch (error) {
+        console.error('API测试失败:', error)
+        alert('API调用失败: ' + (error.message || '未知错误'))
+      }
+    },
+    
     // 加载航班列表
     async loadFlights() {
       this.loading = true
@@ -414,9 +455,152 @@ export default {
     },
 
     // 预订航班
-    bookFlight(flight) {
-      // 这里可以实现预订逻辑
-      alert(`预订航班: ${flight.flightNumber}\n出发: ${flight.departureCity} → ${flight.arrivalCity}\n价格: ¥${flight.basePrice}`)
+    async bookFlight(flight) {
+      console.log('bookFlight 方法被调用', flight)
+      
+      // 检查用户是否登录
+      const user = this.getCurrentUser()
+      console.log('当前用户信息:', user)
+      
+      if (!user) {
+        alert('请先登录后再预订航班')
+        if (this.$router) {
+          this.$router.push('/login')
+        }
+        return
+      }
+
+      // 确认预订
+      const confirmed = confirm(`确认预订航班？\n\n航班号: ${flight.flightNumber}\n航线: ${flight.departureCity} → ${flight.arrivalCity}\n起价: ¥${flight.basePrice}\n\n系统将自动为您分配座位`)
+      if (!confirmed) {
+        console.log('用户取消了订票')
+        return
+      }
+
+      // 设置该航班的加载状态
+      this.bookingLoading[flight.flightNumber] = true
+      console.log('设置加载状态:', this.bookingLoading)
+
+      try {
+        const orderData = {
+          userId: Number(user.userId), // 确保 userId 是数字类型
+          flightNumber: flight.flightNumber
+        }
+
+        // 验证请求数据
+        if (!this.validateOrderData(orderData)) {
+          alert('请求数据验证失败')
+          return
+        }
+
+        console.log('准备发送订单请求:', orderData)
+        const response = await createOrderWithSeatAllocation(orderData)
+        console.log('API响应完成:', response)
+        
+        if (response.data && response.data.success) {
+          const order = response.data.data
+          console.log('订票成功:', order)
+          this.showBookingSuccess(order, flight)
+          // 重新加载航班列表，更新座位信息
+          await this.loadFlights()
+        } else {
+          const errorMsg = response.data?.message || '订票失败，请稍后重试'
+          console.error('业务逻辑失败:', errorMsg)
+          alert('订票失败: ' + errorMsg)
+        }
+      } catch (error) {
+        console.error('预订航班异常:', error)
+        
+        // 详细的错误分类处理
+        if (error.response) {
+          // 服务器返回了错误状态码
+          const status = error.response.status
+          const errorData = error.response.data
+          
+          console.error('HTTP错误状态:', status)
+          console.error('错误响应数据:', errorData)
+          
+          if (status === 500) {
+            alert('服务器内部错误，请稍后重试或联系管理员')
+          } else if (status === 400) {
+            alert('请求参数错误: ' + (errorData?.message || '请检查输入数据'))
+          } else if (status === 401) {
+            alert('用户未授权，请重新登录')
+            // 可以跳转到登录页
+          } else {
+            alert(`订票失败 (${status}): ${errorData?.message || '未知错误'}`)
+          }
+        } else if (error.request) {
+          // 请求已发出但没有收到响应
+          console.error('网络请求超时或无响应:', error.request)
+          alert('网络连接失败，请检查网络连接后重试')
+        } else {
+          // 其他错误
+          console.error('请求配置错误:', error.message)
+          alert('请求配置错误: ' + error.message)
+        }
+      } finally {
+        // 清除该航班的加载状态
+        this.bookingLoading[flight.flightNumber] = false
+        console.log('清除加载状态:', this.bookingLoading)
+      }
+    },
+
+    // 获取当前登录用户信息
+    getCurrentUser() {
+      const userString = localStorage.getItem('user')
+      if (userString) {
+        try {
+          return JSON.parse(userString)
+        } catch (e) {
+          console.error('解析用户信息失败:', e)
+          return null
+        }
+      }
+      return null
+    },
+
+    // 验证订单数据
+    validateOrderData(orderData) {
+      console.log('验证订单数据:', orderData)
+      
+      // if (!orderData.userId) {
+      //   console.error('用户ID为空')
+      //   return false
+      // }
+      
+      // const userIdNum = Number(orderData.userId)
+      // if (isNaN(userIdNum) || userIdNum <= 0) {
+      //   console.error('用户ID无效，必须是正数:', orderData.userId)
+      //   return false
+      // }
+      
+      // if (!orderData.flightNumber || typeof orderData.flightNumber !== 'string') {
+      //   console.error('航班号为空或类型错误')
+      //   return false
+      // }
+      
+      // if (orderData.flightNumber.trim().length === 0) {
+      //   console.error('航班号为空字符串')
+      //   return false
+      // }
+      
+      console.log('订单数据验证通过')
+      return true
+    },
+
+    // 显示订票成功信息
+    showBookingSuccess(order, flight) {
+      // 使用简洁的成功提示
+      this.successMessage = `订票成功！航班 ${flight.flightNumber}，座位 ${order.seatNumber}，订单号 ${order.orderNumber}`
+      
+      // 3秒后自动隐藏提示
+      setTimeout(() => {
+        this.successMessage = null
+      }, 5000)
+      
+      // 可选：跳转到订单详情页面
+      // this.$router.push(`/orders/${order.orderNumber}`)
     }
   }
 }
@@ -920,6 +1104,115 @@ export default {
     width: 100%;
     justify-content: center;
     margin-bottom: 10px;
+  }
+}
+
+/* 加载状态动画 */
+.loading-spinner {
+  display: inline-block;
+  margin-right: 5px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 改进按钮样式 */
+.book-btn {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.book-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5a67d8, #667eea);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.book-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.book-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: #9ca3af;
+}
+
+/* 成功提示样式（如果需要的话） */
+.success-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 0;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+  z-index: 1000;
+  animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  cursor: pointer;
+  max-width: 400px;
+  min-width: 300px;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  gap: 12px;
+}
+
+.toast-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.toast-message {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.toast-close {
+  font-size: 16px;
+  opacity: 0.7;
+  flex-shrink: 0;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.success-toast:hover .toast-close {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.booking-success {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #10b981;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }
 </style>

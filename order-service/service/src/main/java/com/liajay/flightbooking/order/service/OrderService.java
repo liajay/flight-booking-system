@@ -2,6 +2,7 @@ package com.liajay.flightbooking.order.service;
 
 import com.liajay.flightbooking.order.model.vo.OrderVO;
 import com.liajay.flightbooking.order.service.dto.CreateOrderDTO;
+import com.liajay.flightbooking.order.service.dto.CreateOrderWithSeatAllocationDTO;
 import com.liajay.flightbooking.order.service.dto.OrderQueryResultDTO;
 
 /**
@@ -36,4 +37,12 @@ public interface OrderService {
      * @return 订单查询结果
      */
     OrderQueryResultDTO getOrdersByUserId(Long userId, int page, int size);
+    
+    /**
+     * 创建订单并自动分配座位
+     * 
+     * @param createOrderDTO 创建订单DTO
+     * @return 订单VO
+     */
+    OrderVO createOrderWithSeatAllocation(CreateOrderWithSeatAllocationDTO createOrderDTO);
 }

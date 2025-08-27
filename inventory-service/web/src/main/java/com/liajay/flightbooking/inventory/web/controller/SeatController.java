@@ -134,4 +134,20 @@ public class SeatController {
         }
     }
 
+    /**
+     * 为指定航班分配一个座位
+     */
+    @PostMapping("/allocate/{flightNumber}")
+    public HttpResponse<Seat> allocateSeat(@PathVariable("flightNumber") String flightNumber) {
+        try {
+            Seat allocatedSeat = seatService.allocateSeat(flightNumber);
+            if (allocatedSeat == null) {
+                return HttpResponse.error("该航班没有可用座位");
+            }
+            return HttpResponse.success(allocatedSeat);
+        } catch (Exception e) {
+            return HttpResponse.error("分配座位失败: " + e.getMessage());
+        }
+    }
+
 }

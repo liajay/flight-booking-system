@@ -70,4 +70,28 @@
         <include refid="Dynamic_Where_Clause"/>
     </select>
 
+    <!-- 查找指定航班的第一个可用座位 -->
+    <select id="findFirstAvailableSeat" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seats
+        WHERE flight_number = #{flightNumber}
+        AND is_available = TRUE
+        ORDER BY 
+            CASE seat_class 
+                WHEN 'ECONOMY' THEN 1
+                WHEN 'BUSINESS' THEN 2
+                WHEN 'FIRST' THEN 3
+                ELSE 4
+            END,
+            seat_number
+        LIMIT 1
+    </select>
+
+    <!-- 更新座位可用状态 -->
+    <update id="updateSeatAvailability">
+        UPDATE seats
+        SET is_available = #{isAvailable}
+        WHERE id = #{id}
+    </update>
+
 </mapper>
