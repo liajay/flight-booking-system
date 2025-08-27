@@ -1,0 +1,57 @@
+@startuml 分页查询订单接口时序图
+title 分页查询订单接口时序图
+
+actor 用户 as User
+participant "前端应用" as Frontend
+participant "网关服务" as Gateway
+participant "订单服务" as OrderService
+database "数据库" as DB
+
+User -> Frontend: 点击"我的订单"菜单
+activate Frontend
+
+Frontend -> Gateway: GET /api/orders/user?page=0&size=10
+activate Gateway
+note right: 需要JWT验证
+
+Gateway -> Gateway: JWT验证并提取用户ID
+
+Gateway -> OrderService: 转发查询请求\n(附加用户ID到请求头)
+activate OrderService
+
+OrderService -> OrderService: 从上下文获取用户ID
+
+OrderService -> DB: 查询订单总数
+activate DB
+DB --> OrderService: 返回总记录数
+deactivate DB
+
+alt 存在订单记录
+    OrderService -> DB: 分页查询订单列表
+    activate DB
+    DB --> OrderService: 返回订单列表
+    deactivate DB
+    
+    OrderService -> OrderService: 构建分页结果
+    OrderService --> Gateway: 返回订单列表和分页信息
+else 无订单记录
+    OrderService --> Gateway: 返回空列表
+end
+
+deactivate OrderService
+
+Gateway --> Frontend: 返回查询结果
+deactivate Gateway
+
+Frontend -> Frontend: 渲染订单列表和分页控件
+Frontend --> User: 显示订单列表\n(订单号、航班号、座位号、金额)
+
+alt 用户点击翻页
+    User -> Frontend: 点击"下一页"
+    Frontend -> Gateway: GET /api/orders/user?page=1&size=10
+    note over Frontend,Gateway: 重复上述查询流程
+end
+
+deactivate Frontend
+
+@enduml

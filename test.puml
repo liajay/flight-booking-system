@@ -1,0 +1,15 @@
+@startuml
+class User{
+-Long id
+-Long user_id
+-String username
+-String password
+}
+
+note right of User::id
+  用户表id,自增
+end note
+note right of User::user_id
+  用户唯一标识,唯一,应用生成
+end note
+@enduml

@@ -1,0 +1,44 @@
+@startuml 座位查询接口时序图
+title 座位查询接口时序图
+
+actor 用户 as User
+participant "前端应用" as Frontend
+participant "网关服务" as Gateway
+participant "库存服务" as InventoryService
+database "数据库" as DB
+
+User -> Frontend: 选择航班，查看可用座位
+activate Frontend
+
+Frontend -> Gateway: GET /api/seats/flight-number/CA1234/available
+activate Gateway
+note right: 需要JWT验证
+
+Gateway -> Gateway: JWT Token验证
+
+Gateway -> InventoryService: 转发座位查询请求
+activate InventoryService
+
+InventoryService -> InventoryService: 构建查询条件\n(航班号、可用性、舱位等级)
+
+InventoryService -> DB: 查询可用座位总数
+activate DB
+DB --> InventoryService: 返回总数
+deactivate DB
+
+InventoryService -> DB: 分页查询可用座位
+activate DB
+DB --> InventoryService: 返回座位列表
+deactivate DB
+
+InventoryService -> InventoryService: 构建分页结果
+InventoryService --> Gateway: 返回可用座位列表
+deactivate InventoryService
+
+Gateway --> Frontend: 返回查询结果
+deactivate Gateway
+
+Frontend --> User: 显示可选座位
+deactivate Frontend
+
+@enduml
