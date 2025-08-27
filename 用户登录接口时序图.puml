@@ -1,0 +1,48 @@
+d@startuml 用户登录接口时序图
+title 用户登录接口时序图
+
+actor 用户 as User
+participant "前端应用" as Frontend
+participant "网关服务" as Gateway
+participant "用户服务" as UserService
+database "数据库" as DB
+
+User -> Frontend: 输入用户名密码
+activate Frontend
+
+Frontend -> Gateway: POST /api/users/login
+activate Gateway
+note right: 登录接口免JWT验证
+
+Gateway -> UserService: 转发登录请求
+activate UserService
+
+UserService -> DB: 查询用户信息
+activate DB
+DB --> UserService: 返回用户数据
+deactivate DB
+
+UserService -> UserService: 密码验证
+
+alt 验证成功
+    UserService -> UserService: 生成JWT Token
+    UserService --> Gateway: 返回Token和用户信息
+else 验证失败
+    UserService --> Gateway: 返回错误信息
+end
+
+deactivate UserService
+
+Gateway --> Frontend: 返回登录结果
+deactivate Gateway
+
+alt 登录成功
+    Frontend -> Frontend: 存储Token
+    Frontend --> User: 跳转首页
+else 登录失败
+    Frontend --> User: 显示错误
+end
+
+deactivate Frontend
+
+@enduml

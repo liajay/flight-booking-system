@@ -1,0 +1,49 @@
+@startuml 用户注册接口时序图
+title 用户注册接口时序图
+
+actor 用户 as User
+participant "前端应用" as Frontend
+participant "网关服务" as Gateway
+participant "用户服务" as UserService
+database "数据库" as DB
+
+User -> Frontend: 填写注册信息
+activate Frontend
+
+Frontend -> Gateway: POST /api/users/register
+activate Gateway
+note right: 注册接口免JWT验证
+
+Gateway -> UserService: 转发注册请求
+activate UserService
+
+UserService -> DB: 检查用户名是否存在
+activate DB
+DB --> UserService: 返回查询结果
+deactivate DB
+
+alt 用户名已存在
+    UserService --> Gateway: 返回"用户名已存在"
+else 用户名可用
+    UserService -> UserService: 密码加密
+    UserService -> DB: 创建新用户
+    activate DB
+    DB --> UserService: 返回用户ID
+    deactivate DB
+    UserService --> Gateway: 返回注册成功
+end
+
+deactivate UserService
+
+Gateway --> Frontend: 返回注册结果
+deactivate Gateway
+
+alt 注册成功
+    Frontend --> User: 跳转登录页面
+else 注册失败
+    Frontend --> User: 显示错误信息
+end
+
+deactivate Frontend
+
+@enduml

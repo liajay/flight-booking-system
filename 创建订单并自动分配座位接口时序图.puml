@@ -1,0 +1,79 @@
+@startuml 创建订单并自动分配座位接口时序图
+title 创建订单并自动分配座位接口时序图
+
+actor 用户 as User
+participant "前端应用" as Frontend
+participant "网关服务" as Gateway
+participant "订单服务" as OrderService
+participant "库存服务" as InventoryService
+database "订单数据库" as OrderDB
+database "库存数据库" as InventoryDB
+
+User -> Frontend: 选择航班，点击"自动分配座位订票"
+activate Frontend
+
+Frontend -> Gateway: POST /api/orders/with-seat-allocation
+activate Gateway
+note right: 需要JWT验证
+
+Gateway -> Gateway: JWT验证并获取用户ID
+
+Gateway -> OrderService: 转发订单创建请求
+activate OrderService
+
+note over OrderService: 开启订单事务
+
+OrderService -> InventoryService: HTTP调用分配座位\nPOST /api/seats/allocate/CA1234
+activate InventoryService
+
+note over InventoryService: 开启座位事务
+
+InventoryService -> InventoryDB: 查找第一个可用座位
+activate InventoryDB
+InventoryDB --> InventoryService: 返回可用座位
+deactivate InventoryDB
+
+alt 找到可用座位
+    InventoryService -> InventoryDB: 更新座位为不可用
+    activate InventoryDB
+    InventoryDB --> InventoryService: 更新成功
+    deactivate InventoryDB
+    
+    note over InventoryService: 提交座位事务
+    InventoryService --> OrderService: 返回分配的座位信息
+else 没有可用座位
+    note over InventoryService: 回滚座位事务
+    InventoryService --> OrderService: 返回分配失败
+end
+
+deactivate InventoryService
+
+alt 座位分配成功
+    OrderService -> OrderService: 生成订单号
+    
+    OrderService -> OrderDB: 创建订单记录
+    activate OrderDB
+    OrderDB --> OrderService: 插入成功
+    deactivate OrderDB
+    
+    note over OrderService: 提交订单事务
+    OrderService --> Gateway: 返回订单信息
+else 座位分配失败
+    note over OrderService: 回滚订单事务
+    OrderService --> Gateway: 返回错误信息
+end
+
+deactivate OrderService
+
+Gateway --> Frontend: 返回订单创建结果
+deactivate Gateway
+
+alt 订票成功
+    Frontend --> User: 显示订单确认信息
+else 订票失败
+    Frontend --> User: 显示错误信息
+end
+
+deactivate Frontend
+
+@enduml

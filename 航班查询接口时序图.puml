@@ -1,0 +1,45 @@
+@startuml 航班查询接口时序图
+title 航班查询接口时序图
+
+actor 用户 as User
+participant "前端应用" as Frontend
+participant "网关服务" as Gateway
+participant "库存服务" as InventoryService
+database "数据库" as DB
+
+User -> Frontend: 选择出发地、目的地、日期
+activate Frontend
+
+Frontend -> Gateway: GET /api/flights?departureCity=北京&arrivalCity=上海
+activate Gateway
+note right: 需要JWT验证
+
+Gateway -> Gateway: JWT Token验证
+
+Gateway -> InventoryService: 转发查询请求
+activate InventoryService
+
+InventoryService -> InventoryService: 参数解码处理
+InventoryService -> InventoryService: 构建查询条件
+
+InventoryService -> DB: 分页查询航班
+activate DB
+DB --> InventoryService: 返回航班列表
+deactivate DB
+
+InventoryService -> DB: 查询总记录数
+activate DB
+DB --> InventoryService: 返回总数
+deactivate DB
+
+InventoryService -> InventoryService: 构建分页结果
+InventoryService --> Gateway: 返回航班列表
+deactivate InventoryService
+
+Gateway --> Frontend: 返回查询结果
+deactivate Gateway
+
+Frontend --> User: 显示航班列表
+deactivate Frontend
+
+@enduml
